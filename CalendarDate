@@ -1,0 +1,17 @@
+package com.example.aboutme
+
+import android.content.Intent
+import android.os.Bundle
+import androidx.appcompat.app.AppCompatActivity
+import kotlinx.android.synthetic.main.calendardate.*
+
+class CalendarDate: AppCompatActivity() {
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        setContentView(R.layout.calendardate)
+
+        returnToCalendar.setOnClickListener {
+            startActivity(Intent(this, Calendar::class.java))
+        }
+    }
+}
