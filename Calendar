@@ -1,0 +1,35 @@
+package com.example.aboutme
+
+import android.app.Activity
+import android.content.Intent
+import android.os.Bundle
+import androidx.appcompat.app.AppCompatActivity
+import com.google.android.material.bottomnavigation.BottomNavigationView
+
+class Calendar: AppCompatActivity() {
+    override fun onCreate(savedInstanceState: Bundle?) {
+        //loads the graphical layout
+        super.onCreate(savedInstanceState)
+        setContentView(R.layout.calendar)
+
+        //controls the clicks on the bottom navigation bar
+        val bottomNavigationView = findViewById<BottomNavigationView>(R.id.bottomNavigationCalendar)
+        bottomNavigationView.selectedItemId = R.id.calendar
+
+        bottomNavigationView.setOnNavigationItemSelectedListener { item ->
+            when (item.itemId) {
+                R.id.mainActivity -> {
+                    startActivity(Intent(this, MainActivity::class.java))
+                }
+                R.id.sleep -> {
+                    startActivity(Intent(this, Sleep::class.java))
+                }
+                R.id.symptoms -> {
+                    startActivity(Intent(this, Symptoms::class.java))
+                }
+            }
+            overridePendingTransition(0,0)
+            true
+        }
+    }
+}
