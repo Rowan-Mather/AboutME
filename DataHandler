@@ -1,0 +1,46 @@
+package com.example.aboutme
+
+import android.content.Context
+import android.content.SharedPreferences
+import androidx.appcompat.app.AppCompatActivity
+
+class DataHandler : AppCompatActivity() {
+    val sharedPreferences :SharedPreferences = getSharedPreferences("sharedPrefs",Context.MODE_PRIVATE)
+    val editor: SharedPreferences.Editor = sharedPreferences.edit()
+
+    var dateList:  MutableList<String> = mutableListOf<String>()
+    fun populateDates()
+    {
+        val stringDates = sharedPreferences.getString("DATES", "")
+        if (stringDates != null)
+        {
+            if (stringDates != ""){
+                dateList = stringDates.split(";").toMutableList()
+            }
+        }
+    }
+    fun writeDates()
+    {
+        var stringDates = ""
+        for (date in dateList)
+        {
+            stringDates += date+";"
+        }
+        stringDates.dropLast(1)
+        editor.putString("DATES",stringDates)
+        editor.apply()
+    }
+
+//    override fun onCreate(savedInstanceState: Bundle?) {
+//        super.onCreate(savedInstanceState)
+//    }
+/*
+    fun writeActivity(date : String, info : String)
+    {
+
+        storedDates.add("hello")
+
+        editor.putString(date,"gg")
+        editor.apply()
+    }*/
+}
