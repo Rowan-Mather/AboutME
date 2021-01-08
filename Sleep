@@ -1,0 +1,42 @@
+package com.example.aboutme
+
+import android.content.Context
+import android.content.Intent
+import android.content.SharedPreferences
+import androidx.appcompat.app.AppCompatActivity
+import android.os.Bundle
+import android.widget.TextView
+import com.google.android.material.bottomnavigation.BottomNavigationView
+
+class Sleep : AppCompatActivity() {
+    override fun onCreate(savedInstanceState: Bundle?) {
+        //loads the graphical layout
+        super.onCreate(savedInstanceState)
+        setContentView(R.layout.sleep)
+
+        //controls the clicks on the bottom navigation bar
+        val bottomNavigationView = findViewById<BottomNavigationView>(R.id.bottomNavigationSleep)
+        bottomNavigationView.selectedItemId = R.id.sleep
+        bottomNavigationView.setOnNavigationItemSelectedListener { item ->
+            when (item.itemId) {
+                R.id.mainActivity -> {
+                    startActivity(Intent(this, MainActivity::class.java))
+                }
+                R.id.symptoms -> {
+                    startActivity(Intent(this, Symptoms::class.java))
+                }
+                R.id.calendar -> {
+                    startActivity(Intent(this, Calendar::class.java))
+                }
+            }
+            overridePendingTransition(0,0)
+            true
+        }
+
+        val sharedPreferences : SharedPreferences = getSharedPreferences("sharedPrefs", Context.MODE_PRIVATE)
+        val savedSpoons = sharedPreferences.getInt("SPOON_KEY", 10)
+        val textView = findViewById(R.id.textView) as TextView
+        textView.text = savedSpoons.toString()
+
+    }
+}
