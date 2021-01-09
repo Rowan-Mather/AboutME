@@ -2,8 +2,6 @@ package com.example.aboutme
 
 import android.content.Context
 import android.content.SharedPreferences
-import android.view.Gravity
-import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 
 
@@ -119,18 +117,38 @@ class DataHandler : AppCompatActivity() {
             }
         }
     }
+    
+    //any data displayed in the app is read from the below function
+    fun readData(date : String, category: String, infoName : String): String {
+        //as in the write function, the category for the data is assigned a corresponding integer
+        var categoryNum = -1
+        when (category) {
+            "activity" -> categoryNum = 0
+            "sleep" -> categoryNum = 1
+            "symptoms" -> categoryNum = 2
+        }
+        //the data is split into categories & the appropriate category is selected
+        //the category data is split into attributes
+        val currentDateInfo = sharedPreferences.getString(date, "")
+        val currentSplit = currentDateInfo?.split(";")?.toTypedArray()
+        val categoryString = currentSplit?.get(categoryNum)
+        val categorySplit = categoryString?.split(",")?.toTypedArray()
+        //the attributes are searched through for the desired one and if found, 
+        //  the corresponding value is returned as a string
+        if (categorySplit != null) {
+            for (attribute in categorySplit) {
+                if (attribute.contains(infoName+":")) {
+                    val foundInfo = attribute.split(":")?.toTypedArray()
+                    return foundInfo[1]
+                }
+            }
+        }
+        //if the data is not found, this is returned
+        return "ERROR: DATA NOT FOUND"
+    }
 
 //    override fun onCreate(savedInstanceState: Bundle?) {
 //        super.onCreate(savedInstanceState)
 //    }
-    /*
-                val toast = Toast.makeText(
-                applicationContext,
-                "Simple Toast In Android",
-                Toast.LENGTH_LONG
-            ) // initiate the Toast with context, message and duration for the Toast
-            toast.setGravity(Gravity.TOP or Gravity.LEFT, 0, 0) // set gravity for the Toast.
-            toast.show() // display the Toast
-     */
 
 }
