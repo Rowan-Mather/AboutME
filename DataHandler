@@ -2,13 +2,19 @@ package com.example.aboutme
 
 import android.content.Context
 import android.content.SharedPreferences
+import android.view.Gravity
+import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 
+
 class DataHandler : AppCompatActivity() {
+    //initialises the file/location in which I store all the app data - sharedPrefs
     val sharedPreferences :SharedPreferences = getSharedPreferences("sharedPrefs",Context.MODE_PRIVATE)
     val editor: SharedPreferences.Editor = sharedPreferences.edit()
 
+    //creates a list of all the dates on which information from the user is stored
     var dateList:  MutableList<String> = mutableListOf<String>()
+    //fills the list with dates from sharedPrefs
     fun populateDates()
     {
         val stringDates = sharedPreferences.getString("DATES", "")
@@ -19,28 +25,89 @@ class DataHandler : AppCompatActivity() {
             }
         }
     }
-    fun writeDates()
-    {
+    //updates sharedPrefs with the dates
+    fun writeDates() {
         var stringDates = ""
-        for (date in dateList)
-        {
-            stringDates += date+";"
+        for (date in dateList) {
+            stringDates += date + ";"
         }
         stringDates.dropLast(1)
-        editor.putString("DATES",stringDates)
+        editor.putString("DATES", stringDates)
         editor.apply()
+    }
+    //writes activity information to sharedPrefs for a given date
+    fun writeData(date : String, category: String, infoName : String, infoValue: String)
+    {
+        populateDates()
+        //info formatted ACTIVITY,spoons:3,steps:3021;SLEEP,hours:8,quality:good;SYMPTOMS,headache,fever
+        //semicolon between entry page which are specified in caps, comma between attributes, colon between key-value pair
+        if (dateList.contains(date))
+        {
+            val currentDateInfo = sharedPreferences.getString(date, "")
+            var currentSplit = currentDateInfo?.split(";")?.toTypedArray()
+            var activityString = currentSplit?.get(0)
+            val activitySplit = activityString?.split(",")?.toTypedArray()
+            var dataLocation = -1
+            var i = 0
+            if (activitySplit != null) {
+                for (attribute in activitySplit) {
+                    if (attribute.contains(infoName+":")) {
+                        dataLocation = i
+                    }
+                    i+=1
+                }
+            }
+            var newActivityString = ""
+            if (dataLocation == -1)
+            {
+                newActivityString = "$activityString,$infoName:$infoValue"
+            }
+            else
+            {
+                if (activitySplit != null) {
+                    activitySplit.set(dataLocation,"$infoName:$infoValue")
+                }
+                if (activitySplit != null) {
+                    newActivityString = activitySplit.joinToString(",")
+                }
+            }
+            if (currentSplit != null) {
+                currentSplit.set(0,newActivityString)
+            }
+            if (currentSplit != null) {
+                editor.putString(date,currentSplit.joinToString(";"))
+            }
+            editor.apply()
+        }
+        else
+        {
+            //if the date doesn't already have information stored on it, it is added to sharedPrefs
+            dateList.add(date)
+            writeDates()
+            var toWrite = ""
+            when (category) {
+                "activity" -> toWrite = "ACTIVITY,$infoName:$infoValue;SLEEP;SYMPTOMS"
+                "sleep" -> toWrite = "ACTIVITY;SLEEP,$infoName:$infoValue;SYMPTOMS"
+                "symptoms" -> toWrite = "ACTIVITY;SLEEP;SYMPTOMS,$infoName:$infoValue"
+            }
+            if (toWrite != "") {
+                editor.putString(date, toWrite)
+                editor.apply()
+            }
+        }
     }
 
 //    override fun onCreate(savedInstanceState: Bundle?) {
 //        super.onCreate(savedInstanceState)
 //    }
-/*
-    fun writeActivity(date : String, info : String)
-    {
+    /*
+                val toast = Toast.makeText(
+                applicationContext,
+                "Simple Toast In Android",
+                Toast.LENGTH_LONG
+            ) // initiate the Toast with context, message and duration for the Toast
+            toast.setGravity(Gravity.TOP or Gravity.LEFT, 0, 0) // set gravity for the Toast.
+            toast.show() // display the Toast
+     */
 
-        storedDates.add("hello")
-
-        editor.putString(date,"gg")
-        editor.apply()
-    }*/
 }
