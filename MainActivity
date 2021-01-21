@@ -18,11 +18,6 @@ class MainActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
 
-        //initialises the sole instance of the data handling class
-        // and sets it to the object received from the previous activity if applicable
-        //var dataHandler: DataHandler
-        //try { dataHandler = intent.getSerializableExtra("data") as DataHandler } finally { }
-
         //controls the clicks on the bottom navigation bar
         val bottomNavigationView = findViewById<BottomNavigationView>(R.id.bottomNavigationActivity)
         bottomNavigationView.selectedItemId = R.id.mainActivity
@@ -30,15 +25,12 @@ class MainActivity : AppCompatActivity() {
             when (item.itemId) {
                 R.id.sleep -> {
                     startActivity(Intent(this, Sleep::class.java))
-                    //startActivity(Intent(this, Sleep::class.java).putExtra("data",dataHandler))
                 }
                 R.id.symptoms -> {
                     startActivity(Intent(this, Symptoms::class.java))
-                    //startActivity(Intent(this, Symptoms::class.java).putExtra("data",dataHandler))
                 }
                 R.id.calendar -> {
                     startActivity(Intent(this, Calendar::class.java))
-                    //startActivity(Intent(this, Calendar::class.java).putExtra("data",dataHandler))
                 }
             }
             overridePendingTransition(0,0)
@@ -48,19 +40,10 @@ class MainActivity : AppCompatActivity() {
         //initialises the variable spoons and default sets it to 10
         //  if the number of spoons for that day is stored, it is loaded
         var spoons = 10
-        var spoonystringy = prefs.readSomething()
-        if (spoonystringy != "ERROR")
-        {
-            if (spoonystringy != null) {
-                spoons = spoonystringy.toInt()
-            }
-        }
-        /*
-        var currentDate = dataHandler.getCurrentDate()
-        var spoonsString = dataHandler.readData(currentDate,"activity","spoons")
+        var currentDate = prefs.getCurrentDate()
+        var spoonsString = prefs.readData(currentDate,"activity","spoons")
         if (spoonsString != "ERROR: DATA NOT FOUND") { spoons = spoonsString.toInt() }
         //the text view that displays the number of spoons is updated
-        */
         val spoonCountView = findViewById(R.id.spoonCount) as TextView
         spoonCountView.text = spoons.toString()
 
@@ -68,8 +51,7 @@ class MainActivity : AppCompatActivity() {
         spoonButton.setOnClickListener {
             spoons -= 1
             spoonCountView.text = spoons.toString()
-            prefs.writeSomething(spoons.toString())
-            //dataHandler.writeData(currentDate,"activity", "spoons", spoons.toString())
+            prefs.writeData(currentDate,"activity", "spoons", spoons.toString())
         }
     }
 }
