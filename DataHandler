@@ -1,15 +1,34 @@
 package com.example.aboutme
 
+import android.app.Application
 import android.content.Context
 import android.content.SharedPreferences
-import androidx.appcompat.app.AppCompatActivity
+import android.os.Build
+import androidx.annotation.RequiresApi
+import java.io.Serializable;
+import java.time.LocalDateTime
+import java.time.format.DateTimeFormatter
+
+class DataHandler (context: Context) {
+    private val sharedPreferences: SharedPreferences = context.getSharedPreferences("sharedPrefs", Context.MODE_PRIVATE)
+    private val editor: SharedPreferences.Editor = sharedPreferences.edit()
+
+    fun writeSomething (something: String)
+    {
+        editor.putString("test", something)
+        editor.apply()
+    }
+    fun readSomething() : String?
+    {
+        return sharedPreferences.getString("test", "ERROR")
+    }
 
 
-class DataHandler : AppCompatActivity() {
     //initialises the file/location in which I store all the app data - sharedPrefs
-    val sharedPreferences :SharedPreferences = getSharedPreferences("sharedPrefs",Context.MODE_PRIVATE)
-    val editor: SharedPreferences.Editor = sharedPreferences.edit()
+    //    var sharedPreferences :SharedPreferences = getSharedPreferences("sharedPrefs",Context.MODE_PRIVATE)
+    //    val editor: SharedPreferences.Editor = sharedPreferences.edit()
 
+    /*
     //creates a list of all the dates on which information from the user is stored
     var dateList:  MutableList<String> = mutableListOf<String>()
     //fills the list with dates from sharedPrefs
@@ -35,16 +54,17 @@ class DataHandler : AppCompatActivity() {
     }
 
     //any data updates from the app are written to sharedPrefs through the below function
-    //it takes the date that the information is relevant to,
-    //  the category (e.g. activity, sleep)
-    //  the attribute name of the information (e.g. steps, spoons)
-    //  and the value for the information (e.g. 1033, 4)
-    //info is stored by key-value pair of date and all that dates data (both strings)
-    //e.g. Key: 07/01/2020
-    //   value: ACTIVITY,spoons:3,steps:3021;SLEEP,hours:8,quality:good;SYMPTOMS,headache,fever
-    //semicolon between category which are specified in caps, comma between attributes, colon between attribute key-value pair
     fun writeData(date : String, category: String, infoName : String, infoValue: String)
     {
+        //this function takes the date that the information is relevant to,
+        //  the category (e.g. activity, sleep)
+        //  the attribute name of the information (e.g. steps, spoons)
+        //  and the value for the information (e.g. 1033, 4)
+        //info is stored by key-value pair of date and all that dates data (both strings)
+        //e.g. Key: 07/01/2020
+        //   value: ACTIVITY,spoons:3,steps:3021;SLEEP,hours:8,quality:good;SYMPTOMS,headache,fever
+        //semicolon between category which are specified in caps, comma between attributes, colon between attribute key-value pair
+
         populateDates()
         if (dateList.contains(date))
         {
@@ -83,16 +103,12 @@ class DataHandler : AppCompatActivity() {
             //otherwise the attribute is updated
             else
             {
-                if (categorySplit != null) {
-                    categorySplit.set(dataLocation,"$infoName:$infoValue")
-                }
+                categorySplit?.set(dataLocation,"$infoName:$infoValue")
                 if (categorySplit != null) {
                     newCategoryString = categorySplit.joinToString(",")
                 }
             }
-            if (currentSplit != null) {
-                currentSplit.set(categoryNum,newCategoryString)
-            }
+            currentSplit?.set(categoryNum,newCategoryString)
             //the new information is written to sharedPrefs
             if (currentSplit != null) {
                 editor.putString(date,currentSplit.joinToString(";"))
@@ -117,7 +133,7 @@ class DataHandler : AppCompatActivity() {
             }
         }
     }
-    
+
     //any data displayed in the app is read from the below function
     fun readData(date : String, category: String, infoName : String): String {
         //as in the write function, the category for the data is assigned a corresponding integer
@@ -133,7 +149,7 @@ class DataHandler : AppCompatActivity() {
         val currentSplit = currentDateInfo?.split(";")?.toTypedArray()
         val categoryString = currentSplit?.get(categoryNum)
         val categorySplit = categoryString?.split(",")?.toTypedArray()
-        //the attributes are searched through for the desired one and if found, 
+        //the attributes are searched through for the desired one and if found,
         //  the corresponding value is returned as a string
         if (categorySplit != null) {
             for (attribute in categorySplit) {
@@ -147,8 +163,13 @@ class DataHandler : AppCompatActivity() {
         return "ERROR: DATA NOT FOUND"
     }
 
-//    override fun onCreate(savedInstanceState: Bundle?) {
-//        super.onCreate(savedInstanceState)
-//    }
-
+    @RequiresApi(Build.VERSION_CODES.O)
+    fun getCurrentDate() :String
+    {
+        val current = LocalDateTime.now()
+        val formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd")
+        val formatted = current.format(formatter)
+        return formatted
+    }
+    */
 }
