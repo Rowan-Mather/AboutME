@@ -3,62 +3,73 @@ package com.example.aboutme
 import android.content.Context
 import android.content.Intent
 import android.content.SharedPreferences
+import android.os.Build
 import android.os.Bundle
 import android.widget.TextView
+import androidx.annotation.RequiresApi
 import androidx.appcompat.app.AppCompatActivity
 import com.google.android.material.bottomnavigation.BottomNavigationView
 import kotlinx.android.synthetic.main.activity_main.*
 
 class MainActivity : AppCompatActivity() {
-    var spoons = 10
-
+    @RequiresApi(Build.VERSION_CODES.O)
     override fun onCreate(savedInstanceState: Bundle?) {
         //loads the graphical layout
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
 
-        loadData()
-        val textView = findViewById(R.id.spoonCount) as TextView
-        textView.text = spoons.toString()
+        //initialises the sole instance of the data handling class
+        // and sets it to the object received from the previous activity if applicable
+        //var dataHandler: DataHandler
+        //try { dataHandler = intent.getSerializableExtra("data") as DataHandler } finally { }
 
         //controls the clicks on the bottom navigation bar
         val bottomNavigationView = findViewById<BottomNavigationView>(R.id.bottomNavigationActivity)
         bottomNavigationView.selectedItemId = R.id.mainActivity
-
         bottomNavigationView.setOnNavigationItemSelectedListener { item ->
             when (item.itemId) {
                 R.id.sleep -> {
                     startActivity(Intent(this, Sleep::class.java))
+                    //startActivity(Intent(this, Sleep::class.java).putExtra("data",dataHandler))
                 }
                 R.id.symptoms -> {
                     startActivity(Intent(this, Symptoms::class.java))
+                    //startActivity(Intent(this, Symptoms::class.java).putExtra("data",dataHandler))
                 }
                 R.id.calendar -> {
                     startActivity(Intent(this, Calendar::class.java))
+                    //startActivity(Intent(this, Calendar::class.java).putExtra("data",dataHandler))
                 }
             }
             overridePendingTransition(0,0)
             true
         }
 
+        //initialises the variable spoons and default sets it to 10
+        //  if the number of spoons for that day is stored, it is loaded
+        var spoons = 10
+        var spoonystringy = prefs.readSomething()
+        if (spoonystringy != "ERROR")
+        {
+            if (spoonystringy != null) {
+                spoons = spoonystringy.toInt()
+            }
+        }
+        /*
+        var currentDate = dataHandler.getCurrentDate()
+        var spoonsString = dataHandler.readData(currentDate,"activity","spoons")
+        if (spoonsString != "ERROR: DATA NOT FOUND") { spoons = spoonsString.toInt() }
+        //the text view that displays the number of spoons is updated
+        */
+        val spoonCountView = findViewById(R.id.spoonCount) as TextView
+        spoonCountView.text = spoons.toString()
+
+        //when the user taps the spoon button, the spoon count is decremented and the stored data is updated
         spoonButton.setOnClickListener {
             spoons -= 1
-            val textView = findViewById(R.id.spoonCount) as TextView
-            textView.text = spoons.toString()
-            saveData()
+            spoonCountView.text = spoons.toString()
+            prefs.writeSomething(spoons.toString())
+            //dataHandler.writeData(currentDate,"activity", "spoons", spoons.toString())
         }
-
-    }
-    private fun saveData() {
-        val sharedPreferences :SharedPreferences = getSharedPreferences("sharedPrefs",Context.MODE_PRIVATE)
-        val editor = sharedPreferences.edit()
-        editor.putInt("SPOON_KEY",spoons)
-        editor.apply()
-    }
-
-    private fun loadData(){
-        val sharedPreferences :SharedPreferences = getSharedPreferences("sharedPrefs",Context.MODE_PRIVATE)
-        val savedSpoons = sharedPreferences.getInt("SPOON_KEY", 10)
-        spoons = savedSpoons
     }
 }
