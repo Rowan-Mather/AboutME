@@ -1,10 +1,13 @@
 package com.example.aboutme
 
-import android.app.Activity
 import android.content.Intent
 import android.os.Bundle
+import android.widget.CalendarView
 import androidx.appcompat.app.AppCompatActivity
 import com.google.android.material.bottomnavigation.BottomNavigationView
+import kotlinx.android.synthetic.main.calendar.*
+import java.text.SimpleDateFormat
+
 
 class Calendar: AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -30,6 +33,29 @@ class Calendar: AppCompatActivity() {
             }
             overridePendingTransition(0,0)
             true
+        }
+
+        //initialises the variable selectedDate as the date that is highlighted on the calendar
+        val sdf = SimpleDateFormat("dd/MM/yyyy")
+        var selectedDate = sdf.format(calendarView.date).toString()
+        //when the user highlights a different date, selected date is updated
+        calendarView.setOnDateChangeListener(object : CalendarView.OnDateChangeListener {
+            override fun onSelectedDayChange(c: CalendarView, thisyear: Int, thismonth: Int, thisday: Int) {
+                var thismonth2 = thismonth + 1
+                selectedDate = "$thisday/$thismonth2/$thisyear"
+
+                //the data for the selected day is displayed in the scroll bar
+                //calendarDataView.
+
+            }
+        })
+
+        //if the edit button is clicked, the calendarDate activity is started
+        editButton.setOnClickListener {
+            val dateIntent = Intent(this, CalendarDate::class.java)
+            //the selected date is passed into the new activity
+            dateIntent.putExtra("selectedDate",selectedDate)
+            startActivity(dateIntent)
         }
     }
 }
