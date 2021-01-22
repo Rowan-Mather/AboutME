@@ -22,7 +22,11 @@ class DataHandler (context: Context) {
         if (stringDates != null)
         {
             if (stringDates != ""){
-                dateList = stringDates.split(";").toMutableList()
+                dateList = stringDates.split(",").toMutableList()
+            }
+            if ("" in dateList)
+            {
+                dateList.remove("")
             }
         }
     }
@@ -31,7 +35,7 @@ class DataHandler (context: Context) {
     fun writeDates() {
         var stringDates = ""
         for (date in dateList) {
-            stringDates += date + ";"
+            stringDates += date + ","
         }
         stringDates.dropLast(1)
         editor.putString("DATES", stringDates)
@@ -144,6 +148,17 @@ class DataHandler (context: Context) {
         //if the data is not found, this is returned
         return "ERROR: DATA NOT FOUND"
     }
+
+    //returns all the data for a given day
+    fun readAll(date : String): String? {
+        val dateInfo = sharedPrefs.getString(date, "")
+        return dateInfo
+    }
+
+    fun dumpdata(): MutableMap<String, *>? {
+        return sharedPrefs.all
+    }
+
 
     //a function to return the actual current date
     @RequiresApi(Build.VERSION_CODES.O)
