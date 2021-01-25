@@ -1,14 +1,17 @@
 package com.example.aboutme
 
-import android.content.Context
 import android.content.Intent
-import android.content.SharedPreferences
-import androidx.appcompat.app.AppCompatActivity
+import android.os.Build
 import android.os.Bundle
-import android.widget.TextView
+import android.provider.ContactsContract
+import android.widget.SeekBar
+import androidx.annotation.RequiresApi
+import androidx.appcompat.app.AppCompatActivity
 import com.google.android.material.bottomnavigation.BottomNavigationView
+import kotlinx.android.synthetic.main.sleep.*
 
 class Sleep : AppCompatActivity() {
+    @RequiresApi(Build.VERSION_CODES.O)
     override fun onCreate(savedInstanceState: Bundle?) {
         //loads the graphical layout
         super.onCreate(savedInstanceState)
@@ -33,10 +36,28 @@ class Sleep : AppCompatActivity() {
             true
         }
 
-        val sharedPreferences : SharedPreferences = getSharedPreferences("sharedPrefs", Context.MODE_PRIVATE)
-        val savedSpoons = sharedPreferences.getInt("SPOON_KEY", 10)
-        val textView = findViewById(R.id.textView) as TextView
-        textView.text = savedSpoons.toString()
+        var currentDate = prefs.getCurrentDate()
 
+        //Controls the bar for the number of hours slept
+        val sleepHoursBar: SeekBar = findViewById(R.id.sleepHoursBar)
+        //the hoursSlept variable is initialised and, if applicable, loaded from the app data
+        var hoursSlept = 8
+        var hoursString = prefs.readData(currentDate,"sleep","hours")
+        if (hoursString != "ERROR: DATA NOT FOUND") {
+            hoursSlept = hoursString.toInt()
+            hoursSleptView.text = "Hours slept last night: $hoursSlept"
+            sleepHoursBar.progress = hoursSlept
+        }
+        //if the user interacts with the seek bar, the displays are updated and data written accordingly
+        sleepHoursBar?.setOnSeekBarChangeListener(object : SeekBar.OnSeekBarChangeListener {
+            override fun onProgressChanged(seekBar: SeekBar, progress: Int, fromUser: Boolean) {
+                hoursSleptView.text = "Hours slept last night: $progress"
+                hoursSlept = progress
+            }
+            override fun onStartTrackingTouch(seekBar: SeekBar) {}
+            override fun onStopTrackingTouch(seekBar: SeekBar) {
+                prefs.writeData(currentDate,"sleep", "hours", hoursSlept.toString())
+            }
+        })
     }
 }
