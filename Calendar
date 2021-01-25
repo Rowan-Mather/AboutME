@@ -44,7 +44,7 @@ class Calendar: AppCompatActivity() {
         if (selectedDate in prefs.dateList)
         {
             var dateInfo = prefs.readAll(selectedDate)
-            dataTextView.text = dateInfo
+            dataTextView.text = formatData(dateInfo.toString())
         }
         else
         {
