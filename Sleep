@@ -4,6 +4,8 @@ import android.content.Intent
 import android.os.Build
 import android.os.Bundle
 import android.provider.ContactsContract
+import android.widget.RadioButton
+import android.widget.RadioGroup
 import android.widget.SeekBar
 import androidx.annotation.RequiresApi
 import androidx.appcompat.app.AppCompatActivity
@@ -59,5 +61,32 @@ class Sleep : AppCompatActivity() {
                 prefs.writeData(currentDate,"sleep", "hours", hoursSlept.toString())
             }
         })
+
+        //Sleep quality radio buttons
+        val sleepQualityRadio :RadioGroup = findViewById(R.id.qualityGroup)
+        var sleepQuality = ""
+        //if applicable, the previously checked radio button is read from the app data and re-checked
+        var qualityString = prefs.readData(currentDate,"sleep","quality")
+        if (qualityString != "ERROR: DATA NOT FOUND") {
+            sleepQuality = qualityString
+            when (qualityString) {
+                "Fitful" -> sleepQualityRadio.check(R.id.qualityFitful)
+                "Poor" -> sleepQualityRadio.check(R.id.qualityPoor)
+                "Fair" -> sleepQualityRadio.check(R.id.qualityFair)
+                "Restful" -> sleepQualityRadio.check(R.id.qualityRestful)
+                "Energising" -> sleepQualityRadio.check(R.id.qualityEnergising)
+            }
+        }
+        //when a radio button is clicked, the app data is updated
+        sleepQualityRadio.setOnCheckedChangeListener {group, checkedId ->
+            when (checkedId) {
+                R.id.qualityFitful -> sleepQuality = "Fitful"
+                R.id.qualityPoor -> sleepQuality = "Poor"
+                R.id.qualityFair -> sleepQuality = "Fair"
+                R.id.qualityRestful-> sleepQuality = "Restful"
+                R.id.qualityEnergising -> sleepQuality = "Energising"
+            }
+            prefs.writeData(currentDate,"sleep", "quality", sleepQuality)
+        }
     }
 }
