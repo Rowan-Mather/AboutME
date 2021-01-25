@@ -1,7 +1,10 @@
 package com.example.aboutme
 
 import android.content.Intent
+import android.graphics.Color
 import android.os.Bundle
+import android.text.*
+import android.text.style.ForegroundColorSpan
 import android.widget.CalendarView
 import androidx.appcompat.app.AppCompatActivity
 import com.google.android.material.bottomnavigation.BottomNavigationView
@@ -35,39 +38,41 @@ class Calendar: AppCompatActivity() {
             true
         }
 
-        //initialises the variable selectedDate as the date that is highlighted on the calendar
+        //initialises the variable selectedDate as the date that is highlighted on the calendar and checks for data
         val sdf = SimpleDateFormat("yyyy-MM-dd")
         var selectedDate = sdf.format(calendarView.date).toString()
-        //when the user highlights a different date, selected date is updated
+        if (selectedDate in prefs.dateList)
+        {
+            var dateInfo = prefs.readAll(selectedDate)
+            dataTextView.text = dateInfo
+        }
+        else
+        {
+            dataTextView.text = ""
+        }
+
+        //when the user highlights a different date, selected date is updated and the relevant data displayed
         calendarView.setOnDateChangeListener(object : CalendarView.OnDateChangeListener {
             override fun onSelectedDayChange(c: CalendarView, thisyear: Int, thismonth: Int, thisday: Int) {
+                //formatting the date to be in the form yyyy-mm-dd
                 var thismonthplus = thismonth + 1
                 var thisday2 = thisday.toString()
                 var thismonth2 = thismonthplus.toString()
                 var thisyear2 = thisyear.toString()
-                if (thisday < 10){
-                    thisday2 = "0"+thisday.toString()
-                }
+                if (thisday < 10){ thisday2 = "0"+thisday.toString() }
                 if (thismonthplus < 10)
-                {
-                    thismonth2 = "0"+thismonthplus.toString()
-                }
+                { thismonth2 = "0"+thismonthplus.toString() }
                 while (thisyear2.length < 4)
-                {
-                    thisyear2 = "0"+thisyear2
-                }
+                { thisyear2 = "0"+thisyear2 }
+                //selected date is updated
                 selectedDate = "$thisyear2-$thismonth2-$thisday2"
-
                 //the data for the selected day is displayed in the scroll bar
                 if (selectedDate in prefs.dateList)
                 {
                     var dateInfo = prefs.readAll(selectedDate)
-                    dataTextView.text = dateInfo
+                    dataTextView.text = formatData(dateInfo.toString())
                 }
-                else{
-                    dataTextView.text = prefs.dateList.toString()
-                    textTest.text = prefs.dumpdata().toString()+"       "+selectedDate
-                }
+                else { dataTextView.text = "" }
             }
         })
 
@@ -78,5 +83,40 @@ class Calendar: AppCompatActivity() {
             dateIntent.putExtra("selectedDate",selectedDate)
             startActivity(dateIntent)
         }
+    }
+
+    fun formatData(data: String): SpannableString
+    {
+        var newString = ""
+        var bulletString = ""
+        var categories = data.split(";")
+        for (category in categories)
+        {
+            var attributes = category.split(",")
+            var categoryMarker = ""
+            when (attributes[0]) {
+                "ACTIVITY" -> categoryMarker = "⓪ "
+                "SLEEP" -> categoryMarker = "① "
+                "SYMPTOMS" -> categoryMarker = "② "
+            }
+            for (i in 1..attributes.lastIndex)
+            {
+                var attributeSpaced = attributes[i].replace(":", ": ").capitalize()
+                newString += categoryMarker + attributeSpaced + "\n"
+                bulletString += "￭ " + attributeSpaced + "\n"
+            }
+        }
+        var newSpannableString = SpannableString(bulletString)
+        for (i in 0..newString.lastIndex-1)
+        {
+            var bulletColour = ForegroundColorSpan(Color.BLACK)
+            when (newString[i]) {
+                '⓪' -> bulletColour = ForegroundColorSpan(Color.BLUE) //Activity
+                '①' -> bulletColour = ForegroundColorSpan(Color.MAGENTA) //Sleep
+                '②' -> bulletColour = ForegroundColorSpan(Color.GREEN) //Symptoms
+            }
+            newSpannableString.setSpan(bulletColour, i,i+1, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE)
+        }
+        return newSpannableString
     }
 }
