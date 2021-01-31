@@ -133,6 +133,8 @@ class DataHandler (context: Context) {
         //the data is split into categories & the appropriate category is selected
         //the category data is split into attributes
         val currentDateInfo = sharedPrefs.getString(date, "")
+        if (currentDateInfo == "")
+        { return "ERROR: DATA NOT FOUND" }
         val currentSplit = currentDateInfo?.split(";")?.toTypedArray()
         val categoryString = currentSplit?.get(categoryNum)
         val categorySplit = categoryString?.split(",")?.toTypedArray()
@@ -158,7 +160,6 @@ class DataHandler (context: Context) {
     fun dumpdata(): MutableMap<String, *>? {
         return sharedPrefs.all
     }
-
 
     //a function to return the actual current date
     @RequiresApi(Build.VERSION_CODES.O)
