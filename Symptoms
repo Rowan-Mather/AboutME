@@ -15,6 +15,8 @@ import kotlinx.android.synthetic.main.symptoms.*
 
 
 class Symptoms : AppCompatActivity() {
+    private var checkBoxes = linkedMapOf<String, Boolean>()
+
     @RequiresApi(Build.VERSION_CODES.O)
     override fun onCreate(savedInstanceState: Bundle?) {
         //loads the graphical layout
@@ -86,9 +88,14 @@ class Symptoms : AppCompatActivity() {
             }
         })
 
-        //checkBoxes.put()
+
         val symptomsLinearLayout: LinearLayout = findViewById(R.id.symptomsScrollViewLinearLayout)
-        var checkBoxes = linkedMapOf<String, Boolean>()
+        val loadBoxesString = prefs.readData(currentDate, "symptoms", "selectedCheckBoxes")
+        var loadedBoxes: List<String> = listOf()
+        if ((loadBoxesString != "ERROR: DATA NOT FOUND") and (loadBoxesString != ""))
+        {
+            loadedBoxes = loadBoxesString.split("+")
+        }
         var checkBoxNames = prefs.readCheckBoxes()
         if (checkBoxNames == null)
         {
@@ -103,8 +110,15 @@ class Symptoms : AppCompatActivity() {
                 val checkBox = CheckBox(ContextThemeWrapper(this, R.style.checkBox))
                 checkBox.id = i
                 checkBox.text = checkBoxNames[i]
-                symptomsLinearLayout?.addView(checkBox)
                 checkBoxes[checkBoxNames[i]] = false
+                if (loadedBoxes != null){
+                    if (checkBoxNames[i] in loadedBoxes)
+                    {
+                        checkBoxes[checkBoxNames[i]] = true
+                        checkBox.isChecked = true
+                    }
+                }
+                symptomsLinearLayout?.addView(checkBox)
             }
         }
 
@@ -112,39 +126,37 @@ class Symptoms : AppCompatActivity() {
             val newName = insertNewSymptom.text.toString()
             if (newName.matches("^[a-zA-Z0-9]*$".toRegex()))
             {
-                checkBoxes[newName] = false
+                checkBoxes[newName] = true
+                dataUpdateSelectedBoxes()
+                prefs.writeCheckBoxes(checkBoxes.keys.toTypedArray())
             }
             else
             {
                 Toast.makeText(applicationContext,"Symptom name must be alphanumeric", Toast.LENGTH_SHORT).show()
             }
         }
-
-        //var numbers = mutableListOf("one", "two", "three", "four")
-        //var array = [1,2]
-        // Create Checkbox Dynamically
-        /*
-
-            <CheckBox
-                android:id="@+id/checkBox"
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:text="CheckBox"
-                android:onClick="onCheckboxClicked"/>
-
-        var stuff = mutableListOf<String>()
-        var stuff2 = mutableListOf<Int>()
-        for (i in 1..3)
-        {
-            val checkBox = CheckBox(ContextThemeWrapper(this, R.style.checkBox))
-            checkBox.id = i
-            checkBox.setText("some check "+ checkBox.id.toString())
-            symptomsLinearLayout?.addView(checkBox)
-        }*/
     }
 
+    @RequiresApi(Build.VERSION_CODES.O)
     fun onCheckboxClicked(view: View) {
-        var checked = (view as CheckBox).isChecked()
-        symptomsSelectView.text = view.id.toString()
+        var name = (view as CheckBox).text.toString()
+        checkBoxes[name] = view.isChecked
+        dataUpdateSelectedBoxes()
+    }
+
+    @RequiresApi(Build.VERSION_CODES.O)
+    fun dataUpdateSelectedBoxes()
+    {
+        var boxListString = ""
+        var names = checkBoxes.keys.toTypedArray()
+        var toggles = checkBoxes.values.toBooleanArray()
+        if (names.isNotEmpty()){
+            for (i in 0 until checkBoxes.size)
+            {
+                if (toggles[i]) { boxListString+=names[i]+"+" }
+            }
+            boxListString.dropLast(1)
+        }
+        prefs.writeData(prefs.getCurrentDate(), "symptoms", "selectedCheckBoxes", boxListString)
     }
 }
