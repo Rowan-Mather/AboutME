@@ -1,0 +1,110 @@
+package com.example.aboutme
+
+import android.content.Intent
+import android.os.Build
+import android.os.Bundle
+import android.view.ContextThemeWrapper
+import android.view.View
+import android.widget.CheckBox
+import android.widget.LinearLayout
+import android.widget.SeekBar
+import androidx.annotation.RequiresApi
+import androidx.appcompat.app.AppCompatActivity
+import com.google.android.material.bottomnavigation.BottomNavigationView
+import kotlinx.android.synthetic.main.sleep.*
+import kotlinx.android.synthetic.main.symptoms.*
+
+class Symptoms : AppCompatActivity() {
+    @RequiresApi(Build.VERSION_CODES.O)
+    override fun onCreate(savedInstanceState: Bundle?) {
+        //loads the graphical layout
+        super.onCreate(savedInstanceState)
+        setContentView(R.layout.symptoms)
+
+        //controls the clicks on the bottom navigation bar
+        val bottomNavigationView = findViewById<BottomNavigationView>(R.id.bottomNavigationSymptoms)
+        bottomNavigationView.selectedItemId = R.id.symptoms
+        bottomNavigationView.setOnNavigationItemSelectedListener { item ->
+            when (item.itemId) {
+                R.id.mainActivity -> {
+                    startActivity(Intent(this, MainActivity::class.java))
+                }
+                R.id.sleep -> {
+                    startActivity(Intent(this, Sleep::class.java))
+                }
+                R.id.calendar -> {
+                    startActivity(Intent(this, Calendar::class.java))
+                }
+            }
+            overridePendingTransition(0,0)
+            true
+        }
+
+        var currentDate = prefs.getCurrentDate()
+
+        //Controls the bar for overall health
+        val healthBar: SeekBar = findViewById(R.id.healthBar)
+        //the overallHealth variable is initialised and, if applicable, loaded from the app data
+        var overallHealth = 5
+        var healthString = prefs.readData(currentDate,"symptoms","health")
+        if (healthString != "ERROR: DATA NOT FOUND") {
+            overallHealth = healthString.toInt()
+            overallHealthView.text = "How are you feeling overall? ($healthString)"
+            sleepHoursBar.progress = overallHealth
+        }
+        //if the user interacts with the seek bar, the displays are updated and data written accordingly
+        healthBar?.setOnSeekBarChangeListener(object : SeekBar.OnSeekBarChangeListener {
+            override fun onProgressChanged(seekBar: SeekBar, progress: Int, fromUser: Boolean) {
+                overallHealthView.text = "How are you feeling overall? ($healthString)"
+                overallHealth = progress
+            }
+            override fun onStartTrackingTouch(seekBar: SeekBar) {}
+            override fun onStopTrackingTouch(seekBar: SeekBar) {
+                prefs.writeData(currentDate,"symptoms", "health", overallHealth.toString())
+            }
+        })
+
+        //Controls the bar for overall fatigue
+        val fatigueBar: SeekBar = findViewById(R.id.fatigueBar)
+        //the fatigue variable is initialised and, if applicable, loaded from the app data
+        var fatigue = 5
+        var fatigueString = prefs.readData(currentDate,"symptoms","fatigue")
+        if (fatigueString != "ERROR: DATA NOT FOUND") {
+            fatigue = fatigueString.toInt()
+            fatigueView.text = "How tired/fatigued are you? ($fatigue)"
+            fatigueBar.progress = fatigue
+        }
+        //if the user interacts with the seek bar, the displays are updated and data written accordingly
+        fatigueBar?.setOnSeekBarChangeListener(object : SeekBar.OnSeekBarChangeListener {
+            override fun onProgressChanged(seekBar: SeekBar, progress: Int, fromUser: Boolean) {
+                fatigueView.text = "How tired/fatigued are you? ($fatigue)"
+                fatigue = progress
+            }
+            override fun onStartTrackingTouch(seekBar: SeekBar) {}
+            override fun onStopTrackingTouch(seekBar: SeekBar) {
+                prefs.writeData(currentDate,"symptoms", "fatigue", fatigue.toString())
+            }
+        })
+
+        //
+        var checkBoxes = mutableListOf()
+        //var numbers = mutableListOf("one", "two", "three", "four")
+        //var array = [1,2]
+        val symptomsLinearLayout: LinearLayout = findViewById(R.id.symptomsScrollViewLinearLayout)
+        // Create Checkbox Dynamically
+        var stuff = mutableListOf<String>()
+        var stuff2 = mutableListOf<Int>()
+        for (i in 1..3)
+        {
+            val checkBox = CheckBox(ContextThemeWrapper(this, R.style.checkBox))
+            checkBox.id = i
+            checkBox.setText("some check "+ checkBox.id.toString())
+            symptomsLinearLayout?.addView(checkBox)
+        }
+    }
+
+    fun onCheckboxClicked(view: View) {
+        var checked = (view as CheckBox).isChecked()
+        symptomsSelectView.text = view.id.toString()
+    }
+}
