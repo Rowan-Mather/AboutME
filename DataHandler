@@ -1,6 +1,5 @@
 package com.example.aboutme
 
-import android.app.Application
 import android.content.Context
 import android.content.SharedPreferences
 import android.os.Build
@@ -70,42 +69,49 @@ class DataHandler (context: Context) {
                 "symptoms" -> categoryNum = 2
             }
             //the existing data is read and formatted into arrays
-            val currentDateInfo = sharedPrefs.getString(date, "")
-            var currentSplit = currentDateInfo?.split(";")?.toTypedArray()
-            var categoryString = currentSplit?.get(categoryNum)
-            val categorySplit = categoryString?.split(",")?.toTypedArray()
+            val dateInfo = sharedPrefs.getString(date, "")
+            var dateSplit = dateInfo!!.split(";").toTypedArray()
+            var attributesString = dateSplit[categoryNum]
+            var attributes = attributesString.split(",").toMutableList()
             //if the attribute being written already exists, its position in the data is found
             var dataLocation = -1
             var i = 0
-            if (categorySplit != null) {
-                for (attribute in categorySplit) {
-                    if (attribute.contains(infoName+":")) {
+            for (attribute in attributes) {
+                    if (attribute.contains("$infoName:")) {
                         dataLocation = i
                     }
                     i+=1
                 }
-            }
-            var newCategoryString = ""
             //if the attribute being written does not exist, it is added to the end of the category data
             if (dataLocation == -1)
-            { newCategoryString = "$categoryString,$infoName:$infoValue" }
+            {
+                if (infoValue != "") //checks data being written has actually been defined
+                { attributesString = "$attributesString,$infoName:$infoValue" }
+                else { return }
+            }
             //otherwise the attribute is updated
             else
             {
-                categorySplit?.set(dataLocation,"$infoName:$infoValue")
-                if (categorySplit != null) { newCategoryString = categorySplit.joinToString(",") }
+                if (infoValue == "") //if the user has not defined the data, it is removed from the attribute list
+                { attributes.removeAt(dataLocation) }
+                else
+                { attributes[dataLocation] = "$infoName:$infoValue" } //otherwise it is changed
+                attributesString = attributes.joinToString(",")
             }
-            currentSplit?.set(categoryNum,newCategoryString)
+            dateSplit[categoryNum] = attributesString
             //the new information is written to sharedPrefs
-            if (currentSplit != null) {
-                editor.putString(date,currentSplit.joinToString(";"))
-            }
+            editor.putString(date,dateSplit.joinToString(";"))
             editor.apply()
         }
         else
         {
             //if the date doesn't already have information stored on it, it is added to sharedPrefs
             //the piece of information is then written to the new date in sharedPrefs
+            if (infoValue == "")
+            {
+                //checks that the data being written has actually been defined
+                return
+            }
             dateList.add(date)
             writeDates()
             var toWrite = ""
@@ -132,23 +138,43 @@ class DataHandler (context: Context) {
         }
         //the data is split into categories & the appropriate category is selected
         //the category data is split into attributes
-        val currentDateInfo = sharedPrefs.getString(date, "")
-        if (currentDateInfo == "")
+        val dateInfo = sharedPrefs.getString(date, "")
+        if (dateInfo == "")
         { return "ERROR: DATA NOT FOUND" }
-        val currentSplit = currentDateInfo?.split(";")?.toTypedArray()
-        val categoryString = currentSplit?.get(categoryNum)
-        val categorySplit = categoryString?.split(",")?.toTypedArray()
+        val dateSplit = dateInfo!!.split(";").toTypedArray()
+        val attributesString = dateSplit[categoryNum]
+        val attributes = attributesString.split(",").toTypedArray()
         //the attributes are searched through for the desired one and if found, the corresponding value is returned as a string
-        if (categorySplit != null) {
-            for (attribute in categorySplit) {
-                if (attribute.contains(infoName+":")) {
-                    val foundInfo = attribute.split(":")?.toTypedArray()
-                    return foundInfo[1]
-                }
+        for (attribute in attributes) {
+            if (attribute.contains("$infoName:")) {
+                val foundInfo = attribute.split(":")?.toTypedArray()
+                return foundInfo[1]
             }
         }
         //if the data is not found, this is returned
         return "ERROR: DATA NOT FOUND"
+    }
+
+    fun writeCheckBoxes(boxNames : Array<String>?)
+    {
+        var writeBoxNames = ""
+        if (boxNames != null) {
+            for (box in boxNames) {
+                writeBoxNames += "$box,"
+            }
+            if (writeBoxNames[writeBoxNames.lastIndex] == ',') {
+                writeBoxNames = writeBoxNames.substring(0, writeBoxNames.lastIndex)
+            }
+        }
+        editor.putString("CHECKBOXES", writeBoxNames)
+        editor.apply()
+    }
+
+    fun readCheckBoxes() : Array<String>?
+    {
+        val checkBoxData = sharedPrefs.getString("CHECKBOXES", "")
+        if (checkBoxData == "") { return null }
+        return checkBoxData?.split(",")?.toTypedArray()
     }
 
     //returns all the data for a given day
