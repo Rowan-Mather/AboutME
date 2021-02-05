@@ -4,6 +4,7 @@ import android.content.Intent
 import android.os.Build
 import android.os.Bundle
 import android.view.ContextThemeWrapper
+import android.view.Gravity
 import android.view.View
 import android.widget.*
 import androidx.annotation.RequiresApi
@@ -100,6 +101,7 @@ class Symptoms : AppCompatActivity() {
         if (checkBoxNames == null)
         {
             val noSymptomsView = TextView(this)
+            noSymptomsView.gravity = Gravity.CENTER
             noSymptomsView.text = "You have not added any potential symptoms to your list yet."
             symptomsLinearLayout?.addView(noSymptomsView)
         }
@@ -108,7 +110,6 @@ class Symptoms : AppCompatActivity() {
             for (i in 0 until checkBoxNames.size)
             {
                 val checkBox = CheckBox(ContextThemeWrapper(this, R.style.checkBox))
-                checkBox.id = i
                 checkBox.text = checkBoxNames[i]
                 checkBoxes[checkBoxNames[i]] = false
                 if (loadedBoxes != null){
@@ -124,11 +125,27 @@ class Symptoms : AppCompatActivity() {
 
         addSymptomButton.setOnClickListener {
             val newName = insertNewSymptom.text.toString()
-            if (newName.matches("^[a-zA-Z0-9]*$".toRegex()))
+            if ((newName.matches("^[a-zA-Z0-9]*$".toRegex())) && (newName != ""))
             {
-                checkBoxes[newName] = true
-                dataUpdateSelectedBoxes()
-                prefs.writeCheckBoxes(checkBoxes.keys.toTypedArray())
+                if (!checkBoxes.keys.contains(newName))
+                {
+                    if (checkBoxes.isEmpty())
+                    {
+                        symptomsLinearLayout.removeAllViews()
+                    }
+                    val checkBox = CheckBox(ContextThemeWrapper(this, R.style.checkBox))
+                    checkBox.text = newName
+                    checkBox.isChecked = true
+                    symptomsLinearLayout?.addView(checkBox)
+                    checkBoxes[newName] = true
+                    dataUpdateSelectedBoxes()
+                    prefs.writeCheckBoxes(checkBoxes.keys.toTypedArray())
+                    insertNewSymptom.setText("")
+                }
+                else
+                {
+                    Toast.makeText(applicationContext,"You have already added this symptom", Toast.LENGTH_SHORT).show()
+                }
             }
             else
             {
@@ -155,7 +172,10 @@ class Symptoms : AppCompatActivity() {
             {
                 if (toggles[i]) { boxListString+=names[i]+"+" }
             }
-            boxListString.dropLast(1)
+            if (boxListString.isNotEmpty()){
+                if (boxListString[boxListString.lastIndex] == '+')
+                { boxListString = boxListString.substring(0,boxListString.lastIndex) }
+            }
         }
         prefs.writeData(prefs.getCurrentDate(), "symptoms", "selectedCheckBoxes", boxListString)
     }
