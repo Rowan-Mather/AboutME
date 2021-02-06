@@ -84,11 +84,25 @@ class Calendar: AppCompatActivity() {
         }
     }
 
+    //this function formats the shared preferences into the user-friendly calendar display
     fun formatData(data: String): SpannableString
     {
+        /*
+        the final product is a bullet pointed list of every attribute (labelled)
+        the bullet points are colour coded based on the attributes category e.g. sleep attributes have purple bullet points
+        in order to achieve this there is one string that is formatted as such but the bullet points
+            are replaced with arbitrary category markers ⓪, ①, ② etc (newString)
+        another string is the same but has the bullet points ￭ uncoloured (bulletString)
+        a spannable string is then created from bulletString (that has the potential to be coloured) (newSpannableString)
+        newString is iterated through and when a marker is found, newSpannableString is changed at that location
+            to be the correct colour
+        newSpannable string is returned
+        */
         var newString = ""
         var bulletString = ""
         var categories = data.split(";")
+
+        //for each of the categories, the attributes are placed on a new line and
         for (category in categories)
         {
             var attributes = category.split(",")
@@ -101,7 +115,8 @@ class Calendar: AppCompatActivity() {
             for (i in 1..attributes.lastIndex)
             {
                 var attributeSpaced = attributes[i].replace(":", ": ").capitalize()
-                if (attributeSpaced.split(": ")[0] == "Symptoms")
+                //if the attribute is symptoms, it is formatted nicely into a list
+                if (attributeSpaced.split(": ")[0] == "Symptoms") 
                 { attributeSpaced = attributeSpaced.replace("+", ", ") }
                 newString += categoryMarker + attributeSpaced + "\n"
                 bulletString += "￭ $attributeSpaced\n"
@@ -112,9 +127,9 @@ class Calendar: AppCompatActivity() {
         {
             var bulletColour = ForegroundColorSpan(Color.BLACK)
             when (newString[i]) {
-                '⓪' -> bulletColour = ForegroundColorSpan(Color.BLUE) //Activity
-                '①' -> bulletColour = ForegroundColorSpan(Color.MAGENTA) //Sleep
-                '②' -> bulletColour = ForegroundColorSpan(Color.GREEN) //Symptoms
+                '⓪' -> bulletColour = ForegroundColorSpan(Color.rgb(0, 67, 130)) //Activity
+                '①' -> bulletColour = ForegroundColorSpan(Color.rgb(68, 34, 135)) //Sleep
+                '②' -> bulletColour = ForegroundColorSpan(Color.rgb(1, 96, 63)) //Symptoms
             }
             newSpannableString.setSpan(bulletColour, i,i+1, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE)
         }
