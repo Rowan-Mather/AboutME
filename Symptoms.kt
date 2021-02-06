@@ -17,6 +17,8 @@ import kotlinx.android.synthetic.main.symptoms.*
 
 
 class Symptoms : AppCompatActivity() {
+    //this variable is a dictionary storing all the current symptom checkbox details
+    // where key=[symptom name], value=[true/false (checked/unchecked)]
     private var checkBoxes = linkedMapOf<String, Boolean>()
 
     @RequiresApi(Build.VERSION_CODES.O)
@@ -90,17 +92,24 @@ class Symptoms : AppCompatActivity() {
             }
         })
 
-
+        //this loads with the checkbox list of symptoms
+        //finds the scroll view that contains the symptoms checkboxes
         val symptomsLinearLayout: LinearLayout = findViewById(R.id.symptomsScrollViewLinearLayout)
+        //loads the checkboxes that have already been selected on the current date if applicable
         val loadBoxesString = prefs.readData(currentDate, "symptoms", "symptoms")
         var loadedBoxes: List<String> = listOf()
         if ((loadBoxesString != "ERROR: DATA NOT FOUND") and (loadBoxesString != ""))
         {
             loadedBoxes = loadBoxesString.split("+")
         }
+        //loads the saved checkboxes, nota bene the difference between the list of symptoms
+        // that the user could select which do not get reset with each new day
+        // and the the list of symptoms that the user has selected that day
+        // this is the former, the above is the latter
         var checkBoxNames = prefs.readCheckBoxes()
         if (checkBoxNames == null)
         {
+            //if there are no saved checkboxes, a message is displayed
             val noSymptomsView = TextView(this)
             noSymptomsView.gravity = Gravity.CENTER
             noSymptomsView.text = "You have not added any potential symptoms to your list yet."
@@ -109,12 +118,15 @@ class Symptoms : AppCompatActivity() {
         }
         else
         {
+            //otherwise each saved checkbox is displayed
             for (i in 0 until checkBoxNames.size)
             {
                 val checkBox = CheckBox(ContextThemeWrapper(this, R.style.checkBox))
                 checkBox.setTextSize(TypedValue.COMPLEX_UNIT_DIP, 20F)
                 checkBox.text = checkBoxNames[i]
                 checkBoxes[checkBoxNames[i]] = false
+                //if they are supposed to be checked from earlier that day, they are checked
+                //by default they are added unchecked
                 if (loadedBoxes != null){
                     if (checkBoxNames[i] in loadedBoxes)
                     {
@@ -126,22 +138,26 @@ class Symptoms : AppCompatActivity() {
             }
         }
 
+        //this button adds a new symptom checkbox
         addSymptomButton.setOnClickListener {
+            //it takes the name from the user entry text box
+            //it checks the input is alphanumeric and not blank, and that that symptom hasn't already been added
             val newName = insertNewSymptom.text.toString()
             if ((newName.matches("^[a-zA-Z0-9]*$".toRegex())) && (newName != ""))
             {
                 if (!checkBoxes.keys.contains(newName))
                 {
+                    //if there aren't currently any checkboxes, the message is removed
                     if (checkBoxes.isEmpty())
-                    {
-                        symptomsLinearLayout.removeAllViews()
-                    }
+                    { symptomsLinearLayout.removeAllViews() }
+                    //a new view is created & formatted, assigned the new name
                     val checkBox = CheckBox(ContextThemeWrapper(this, R.style.checkBox))
                     checkBox.text = newName
                     checkBox.setTextSize(TypedValue.COMPLEX_UNIT_DIP, 24F)
                     checkBox.isChecked = true
                     symptomsLinearLayout?.addView(checkBox)
                     checkBoxes[newName] = true
+                    //shared preferences are updated
                     dataUpdateSelectedBoxes()
                     prefs.writeCheckBoxes(checkBoxes.keys.toTypedArray())
                     insertNewSymptom.setText("")
@@ -153,21 +169,36 @@ class Symptoms : AppCompatActivity() {
             { Toast.makeText(applicationContext,"Symptom name must be alphanumeric", Toast.LENGTH_SHORT).show() }
         }
 
+        //this button deletes a symptom checkbox
         deleteSymptomButton.setOnClickListener {
+            //gets the name of the symptom from the input text box & checks that it is a valid name
             val symptomName = insertNewSymptom.text.toString()
             if ((symptomName.matches("^[a-zA-Z0-9]*$".toRegex())) && (symptomName != "") && (checkBoxes.keys.contains(symptomName)))
             {
+                //removes the check box view & the element from the checkboxes dictionary
                 symptomsLinearLayout.removeViewAt(checkBoxes.keys.indexOf(symptomName))
                 checkBoxes.remove(symptomName)
+                //updates shared preferences
                 dataUpdateSelectedBoxes()
                 prefs.writeCheckBoxes(checkBoxes.keys.toTypedArray())
                 insertNewSymptom.setText("")
+                //if there are now no checkboxes, the message is displayed
+                if (checkBoxes.isEmpty())
+                {
+                    val noSymptomsView = TextView(this)
+                    noSymptomsView.gravity = Gravity.CENTER
+                    noSymptomsView.text = "You have not added any potential symptoms to your list yet."
+                    noSymptomsView.setTextSize(TypedValue.COMPLEX_UNIT_DIP, 20F)
+                    symptomsLinearLayout?.addView(noSymptomsView)
+                }
             }
             else
             { Toast.makeText(applicationContext,"Cannot find that symptom", Toast.LENGTH_SHORT).show() }
         }
     }
 
+    //this function is called when any symptom checkbox is clicked
+    //it updates the checkbox dictionary and shared preferences
     @RequiresApi(Build.VERSION_CODES.O)
     fun onCheckboxClicked(view: View) {
         var name = (view as CheckBox).text.toString()
@@ -175,6 +206,10 @@ class Symptoms : AppCompatActivity() {
         dataUpdateSelectedBoxes()
     }
 
+    //this function is specifically for formatting checkbox data to be saved into shared preferences
+    //it finds all the checkboxes that have been checked
+    //then puts the names into one string with '+'s between them
+    //and writes the data to shared preferences
     @RequiresApi(Build.VERSION_CODES.O)
     fun dataUpdateSelectedBoxes()
     {
@@ -193,4 +228,5 @@ class Symptoms : AppCompatActivity() {
         }
         prefs.writeData(prefs.getCurrentDate(), "symptoms", "symptoms", boxListString)
     }
+
 }
