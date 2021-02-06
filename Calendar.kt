@@ -11,7 +11,6 @@ import com.google.android.material.bottomnavigation.BottomNavigationView
 import kotlinx.android.synthetic.main.calendar.*
 import java.text.SimpleDateFormat
 
-
 class Calendar: AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         //loads the graphical layout
@@ -102,12 +101,14 @@ class Calendar: AppCompatActivity() {
             for (i in 1..attributes.lastIndex)
             {
                 var attributeSpaced = attributes[i].replace(":", ": ").capitalize()
+                if (attributeSpaced.split(": ")[0] == "Symptoms")
+                { attributeSpaced = attributeSpaced.replace("+", ", ") }
                 newString += categoryMarker + attributeSpaced + "\n"
-                bulletString += "￭ " + attributeSpaced + "\n"
+                bulletString += "￭ $attributeSpaced\n"
             }
         }
         var newSpannableString = SpannableString(bulletString)
-        for (i in 0..newString.lastIndex-1)
+        for (i in 0 until newString.lastIndex)
         {
             var bulletColour = ForegroundColorSpan(Color.BLACK)
             when (newString[i]) {
