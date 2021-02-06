@@ -3,6 +3,7 @@ package com.example.aboutme
 import android.content.Intent
 import android.os.Build
 import android.os.Bundle
+import android.util.TypedValue
 import android.view.ContextThemeWrapper
 import android.view.Gravity
 import android.view.View
@@ -58,7 +59,7 @@ class Symptoms : AppCompatActivity() {
         //if the user interacts with the seek bar, the displays are updated and data written accordingly
         healthBar?.setOnSeekBarChangeListener(object : SeekBar.OnSeekBarChangeListener {
             override fun onProgressChanged(seekBar: SeekBar, progress: Int, fromUser: Boolean) {
-                overallHealthView.text = "How is your health overall? ($healthString)"
+                overallHealthView.text = "How is your health overall? ($progress)"
                 overallHealth = progress
             }
             override fun onStartTrackingTouch(seekBar: SeekBar) {}
@@ -80,7 +81,7 @@ class Symptoms : AppCompatActivity() {
         //if the user interacts with the seek bar, the displays are updated and data written accordingly
         fatigueBar?.setOnSeekBarChangeListener(object : SeekBar.OnSeekBarChangeListener {
             override fun onProgressChanged(seekBar: SeekBar, progress: Int, fromUser: Boolean) {
-                fatigueView.text = "How tired/fatigued are you? ($fatigue)"
+                fatigueView.text = "How tired/fatigued are you? ($progress)"
                 fatigue = progress
             }
             override fun onStartTrackingTouch(seekBar: SeekBar) {}
@@ -91,7 +92,7 @@ class Symptoms : AppCompatActivity() {
 
 
         val symptomsLinearLayout: LinearLayout = findViewById(R.id.symptomsScrollViewLinearLayout)
-        val loadBoxesString = prefs.readData(currentDate, "symptoms", "selectedCheckBoxes")
+        val loadBoxesString = prefs.readData(currentDate, "symptoms", "symptoms")
         var loadedBoxes: List<String> = listOf()
         if ((loadBoxesString != "ERROR: DATA NOT FOUND") and (loadBoxesString != ""))
         {
@@ -103,6 +104,7 @@ class Symptoms : AppCompatActivity() {
             val noSymptomsView = TextView(this)
             noSymptomsView.gravity = Gravity.CENTER
             noSymptomsView.text = "You have not added any potential symptoms to your list yet."
+            noSymptomsView.setTextSize(TypedValue.COMPLEX_UNIT_DIP, 20F)
             symptomsLinearLayout?.addView(noSymptomsView)
         }
         else
@@ -110,6 +112,7 @@ class Symptoms : AppCompatActivity() {
             for (i in 0 until checkBoxNames.size)
             {
                 val checkBox = CheckBox(ContextThemeWrapper(this, R.style.checkBox))
+                checkBox.setTextSize(TypedValue.COMPLEX_UNIT_DIP, 20F)
                 checkBox.text = checkBoxNames[i]
                 checkBoxes[checkBoxNames[i]] = false
                 if (loadedBoxes != null){
@@ -135,6 +138,7 @@ class Symptoms : AppCompatActivity() {
                     }
                     val checkBox = CheckBox(ContextThemeWrapper(this, R.style.checkBox))
                     checkBox.text = newName
+                    checkBox.setTextSize(TypedValue.COMPLEX_UNIT_DIP, 24F)
                     checkBox.isChecked = true
                     symptomsLinearLayout?.addView(checkBox)
                     checkBoxes[newName] = true
@@ -143,14 +147,24 @@ class Symptoms : AppCompatActivity() {
                     insertNewSymptom.setText("")
                 }
                 else
-                {
-                    Toast.makeText(applicationContext,"You have already added this symptom", Toast.LENGTH_SHORT).show()
-                }
+                { Toast.makeText(applicationContext,"You have already added this symptom", Toast.LENGTH_SHORT).show() }
             }
             else
+            { Toast.makeText(applicationContext,"Symptom name must be alphanumeric", Toast.LENGTH_SHORT).show() }
+        }
+
+        deleteSymptomButton.setOnClickListener {
+            val symptomName = insertNewSymptom.text.toString()
+            if ((symptomName.matches("^[a-zA-Z0-9]*$".toRegex())) && (symptomName != "") && (checkBoxes.keys.contains(symptomName)))
             {
-                Toast.makeText(applicationContext,"Symptom name must be alphanumeric", Toast.LENGTH_SHORT).show()
+                symptomsLinearLayout.removeViewAt(checkBoxes.keys.indexOf(symptomName))
+                checkBoxes.remove(symptomName)
+                dataUpdateSelectedBoxes()
+                prefs.writeCheckBoxes(checkBoxes.keys.toTypedArray())
+                insertNewSymptom.setText("")
             }
+            else
+            { Toast.makeText(applicationContext,"Cannot find that symptom", Toast.LENGTH_SHORT).show() }
         }
     }
 
@@ -177,6 +191,6 @@ class Symptoms : AppCompatActivity() {
                 { boxListString = boxListString.substring(0,boxListString.lastIndex) }
             }
         }
-        prefs.writeData(prefs.getCurrentDate(), "symptoms", "selectedCheckBoxes", boxListString)
+        prefs.writeData(prefs.getCurrentDate(), "symptoms", "symptoms", boxListString)
     }
 }
