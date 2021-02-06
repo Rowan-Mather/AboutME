@@ -158,7 +158,7 @@ class DataHandler (context: Context) {
     fun writeCheckBoxes(boxNames : Array<String>?)
     {
         var writeBoxNames = ""
-        if (boxNames != null) {
+        if ((boxNames != null) && (boxNames.isNotEmpty())) {
             for (box in boxNames) {
                 writeBoxNames += "$box,"
             }
