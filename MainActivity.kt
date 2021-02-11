@@ -56,16 +56,14 @@ class MainActivity : AppCompatActivity() {
         var spoonsString = prefs.readData(currentDate,"activity","spoons")
         if (spoonsString != "ERROR: DATA NOT FOUND") { spoons = spoonsString.toInt() }
         else { spoons = maxSpoons }
-        //the text views that display the number of spoons and the maximum number of spoons are updated
-        spoonCount.text = spoons.toString()
-        spoonsDefaultView.text = "Maximum spoons: $maxSpoons"
+        updateTextViews(spoons,maxSpoons)
 
         //when the user taps the spoon button, the spoon count is decremented and the stored data is updated
         spoonButton.setOnClickListener {
             if (spoons > 0){
                 spoons -= 1
-                spoonCount.text = spoons.toString()
                 prefs.writeData(currentDate,"activity", "spoons", spoons.toString())
+                updateTextViews(spoons,maxSpoons)
             }
             else
             { Toast.makeText(applicationContext,"You have run out of spoons", Toast.LENGTH_SHORT).show() }
@@ -80,10 +78,10 @@ class MainActivity : AppCompatActivity() {
                 if (spoons > 0)
                 {
                     spoons -= 1
-                    spoonCount.text = spoons.toString()
                     if (prefs.readData(currentDate,"activity", "spoons") != "ERROR: DATA NOT FOUND")
                     { prefs.writeData(currentDate,"activity", "spoons", spoons.toString()) }
                 }
+                updateTextViews(spoons,maxSpoons)
             }
             else
             { Toast.makeText(applicationContext,"Your maximum number of spoons can only be from 1-99", Toast.LENGTH_SHORT).show()}
@@ -94,9 +92,9 @@ class MainActivity : AppCompatActivity() {
                 maxSpoons += 1
                 prefs.writeSetting("MAXSPOONS", maxSpoons.toString())
                 spoons += 1
-                spoonCount.text = spoons.toString()
                 if (prefs.readData(currentDate,"activity", "spoons") != "ERROR: DATA NOT FOUND")
                 { prefs.writeData(currentDate,"activity", "spoons", spoons.toString()) }
+                updateTextViews(spoons,maxSpoons)
             }
             else
             { Toast.makeText(applicationContext,"Your maximum number of spoons can only be from 1-99", Toast.LENGTH_SHORT).show()}
@@ -106,5 +104,20 @@ class MainActivity : AppCompatActivity() {
         helpButton.setOnClickListener {
             startActivity(Intent(this, ActivityHelp::class.java))
         }
+    }
+
+    //sets the displayed spoon count, spoon maximum and recommendation message to their live values
+    fun updateTextViews(spoons: Int, max: Int)
+    {
+        var message = ""
+        when (spoons) {
+            0 -> message = "You have no spoons remaining for today. You should rest."
+            1 -> message = "You're spoons are low, consider resting."
+            2 -> message = "You're spoons are low, consider resting."
+            max -> message = "You're spoons are full!\nAfter you have been active, tap the spoon one or more times."
+        }
+        spoonRecommendations.text = message
+        spoonsDefaultView.text = "Maximum spoons: $max"
+        spoonCount.text = spoons.toString()
     }
 }
