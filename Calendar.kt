@@ -32,6 +32,9 @@ class Calendar: AppCompatActivity() {
                 R.id.symptoms -> {
                     startActivity(Intent(this, Symptoms::class.java))
                 }
+                R.id.graphs -> {
+                    startActivity(Intent(this, Graphs::class.java))
+                }
             }
             overridePendingTransition(0,0)
             true
@@ -116,7 +119,7 @@ class Calendar: AppCompatActivity() {
             {
                 var attributeSpaced = attributes[i].replace(":", ": ").capitalize()
                 //if the attribute is symptoms, it is formatted nicely into a list
-                if (attributeSpaced.split(": ")[0] == "Symptoms") 
+                if (attributeSpaced.split(": ")[0] == "Symptoms")
                 { attributeSpaced = attributeSpaced.replace("+", ", ") }
                 newString += categoryMarker + attributeSpaced + "\n"
                 bulletString += "￭ $attributeSpaced\n"
@@ -127,9 +130,9 @@ class Calendar: AppCompatActivity() {
         {
             var bulletColour = ForegroundColorSpan(Color.BLACK)
             when (newString[i]) {
-                '⓪' -> bulletColour = ForegroundColorSpan(Color.rgb(0, 67, 130)) //Activity
-                '①' -> bulletColour = ForegroundColorSpan(Color.rgb(68, 34, 135)) //Sleep
-                '②' -> bulletColour = ForegroundColorSpan(Color.rgb(1, 96, 63)) //Symptoms
+                '⓪' -> bulletColour = ForegroundColorSpan(Color.rgb(112, 200, 255)) //Activity
+                '①' -> bulletColour = ForegroundColorSpan(Color.rgb(183, 125, 255)) //Sleep
+                '②' -> bulletColour = ForegroundColorSpan(Color.rgb(165, 240, 192)) //Symptoms
             }
             newSpannableString.setSpan(bulletColour, i,i+1, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE)
         }
