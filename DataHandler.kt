@@ -177,6 +177,17 @@ class DataHandler (context: Context) {
         return checkBoxData?.split(",")?.toTypedArray()
     }
 
+    fun writeSetting(prefName: String, prefInfo: String)
+    {
+        editor.putString(prefName, prefInfo)
+        editor.apply()
+    }
+
+    fun readSetting(prefName: String) :String
+    {
+        return sharedPrefs.getString(prefName, "ERROR: DATA NOT FOUND")!!
+    }
+
     //returns all the data for a given day
     fun readAll(date : String): String? {
         val dateInfo = sharedPrefs.getString(date, "")
