@@ -41,6 +41,9 @@ class Symptoms : AppCompatActivity() {
                 R.id.calendar -> {
                     startActivity(Intent(this, Calendar::class.java))
                 }
+                R.id.graphs -> {
+                    startActivity(Intent(this, Graphs::class.java))
+                }
             }
             overridePendingTransition(0,0)
             true
@@ -113,7 +116,7 @@ class Symptoms : AppCompatActivity() {
             val noSymptomsView = TextView(this)
             noSymptomsView.gravity = Gravity.CENTER
             noSymptomsView.text = "You have not added any potential symptoms to your list yet."
-            noSymptomsView.setTextSize(TypedValue.COMPLEX_UNIT_DIP, 20F)
+            noSymptomsView.setTextSize(TypedValue.COMPLEX_UNIT_DIP, 24F)
             symptomsLinearLayout?.addView(noSymptomsView)
         }
         else
@@ -122,7 +125,7 @@ class Symptoms : AppCompatActivity() {
             for (i in 0 until checkBoxNames.size)
             {
                 val checkBox = CheckBox(ContextThemeWrapper(this, R.style.checkBox))
-                checkBox.setTextSize(TypedValue.COMPLEX_UNIT_DIP, 20F)
+                checkBox.setTextSize(TypedValue.COMPLEX_UNIT_DIP, 24F)
                 checkBox.text = checkBoxNames[i]
                 checkBoxes[checkBoxNames[i]] = false
                 //if they are supposed to be checked from earlier that day, they are checked
@@ -206,10 +209,12 @@ class Symptoms : AppCompatActivity() {
         dataUpdateSelectedBoxes()
     }
 
-    //this function is specifically for formatting checkbox data to be saved into shared preferences
-    //it finds all the checkboxes that have been checked
-    //then puts the names into one string with '+'s between them
-    //and writes the data to shared preferences
+    /*
+    this function is specifically for formatting checkbox data to be saved into shared preferences
+    it finds all the checkboxes that have been checked
+    then puts the names into one string with '+'s between them
+    and writes the data to shared preferences
+    */
     @RequiresApi(Build.VERSION_CODES.O)
     fun dataUpdateSelectedBoxes()
     {
@@ -228,5 +233,4 @@ class Symptoms : AppCompatActivity() {
         }
         prefs.writeData(prefs.getCurrentDate(), "symptoms", "symptoms", boxListString)
     }
-
 }
