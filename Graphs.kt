@@ -1,13 +1,13 @@
 package com.example.aboutme
 
-import android.R.attr.checked
 import android.content.Intent
 import android.graphics.Color
 import android.graphics.PorterDuff
 import android.os.Build
 import android.os.Bundle
+import android.os.CountDownTimer
+import android.os.Handler
 import android.widget.CompoundButton
-import androidx.annotation.RequiresApi
 import androidx.appcompat.app.AppCompatActivity
 import com.google.android.material.bottomnavigation.BottomNavigationView
 import com.jjoe64.graphview.GraphView
@@ -49,8 +49,30 @@ class Graphs: AppCompatActivity() {
 
         prefs.readDates()
 
+        val graph: GraphView = findViewById(R.id.graph)
+        graph.viewport.setMinY(0.0)
+        graph.viewport.setMaxY(10.0)
+        graph.gridLabelRenderer.isHighlightZeroLines = false
+        graph.gridLabelRenderer.numVerticalLabels = 11
+        graph.viewport.isYAxisBoundsManual = true
+        graph.gridLabelRenderer.setHumanRounding(false)
+
         var selectedGraphs = HashMap<String, Boolean>()
-        selectedGraphs["spoons"] = true
+        var previousSelected = prefs.readSetting("SELECTEDGRAPHS")
+        if (previousSelected == "ERROR: DATA NOT FOUND") { previousSelected = "0000" }
+        selectedGraphs["spoons"] = previousSelected[0] == '1'
+        selectedGraphs["hours"] = previousSelected[1] == '1'
+        selectedGraphs["health"] = previousSelected[2] == '1'
+        selectedGraphs["fatigue"] = previousSelected[3] == '1'
+        spoonsSwitch.isChecked = selectedGraphs["spoons"]!!
+        hoursSwitch.isChecked = selectedGraphs["hours"]!!
+        healthSwitch.isChecked = selectedGraphs["health"]!!
+        fatigueSwitch.isChecked = selectedGraphs["fatigue"]!!
+
+        colourSwitches(selectedGraphs)
+        drawGraphs(getArrayOfSelectedGraphs(selectedGraphs))
+
+        /*
         spoonsSwitch.isChecked = true
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN) {
             spoonsSwitch.thumbDrawable.setColorFilter(
@@ -58,18 +80,68 @@ class Graphs: AppCompatActivity() {
                 PorterDuff.Mode.MULTIPLY
             )
         }
-        drawGraphs(getArrayOfSelectedGraphs(selectedGraphs))
+        drawGraphs(getArrayOfSelectedGraphs(selectedGraphs))*/
 
         spoonsSwitch.setOnCheckedChangeListener(CompoundButton.OnCheckedChangeListener { buttonView, isChecked ->
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN) {
-                spoonsSwitch.thumbDrawable.setColorFilter(
-                    if (isChecked) Color.rgb(112, 200, 255) else Color.GRAY,
-                    PorterDuff.Mode.MULTIPLY
-                )
-            }
+            delay(3000)
             selectedGraphs["spoons"] = isChecked
+            writeSelectedGraphs(selectedGraphs)
+            colourSwitches(selectedGraphs)
             drawGraphs(getArrayOfSelectedGraphs(selectedGraphs))
+            reloadGraph()
         })
+
+        hoursSwitch.setOnCheckedChangeListener(CompoundButton.OnCheckedChangeListener { buttonView, isChecked ->
+            delay(3000)
+            selectedGraphs["hours"] = isChecked
+            writeSelectedGraphs(selectedGraphs)
+            colourSwitches(selectedGraphs)
+            drawGraphs(getArrayOfSelectedGraphs(selectedGraphs))
+            reloadGraph()
+        })
+    }
+
+    fun delay(millis: Long)
+    {
+        /*
+        val start : CountDownTimer(3000, 1000) {
+            override fun onFinish() {
+                // When timer is finished 
+                // Execute your code here
+            }
+        }.start()*/
+    }
+
+    fun colourSwitches(selectedGraphs: HashMap<String, Boolean>)
+    {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN) {
+            var colour = Color.BLACK
+
+            colour = if (selectedGraphs["spoons"]!!)
+            { Color.rgb(112, 200, 255) } else { Color.GRAY }
+            spoonsSwitch.thumbDrawable.setColorFilter(colour, PorterDuff.Mode.MULTIPLY)
+
+            colour = if (selectedGraphs["hours"]!!)
+            { Color.rgb(183, 125, 255) } else { Color.GRAY }
+            hoursSwitch.thumbDrawable.setColorFilter(colour, PorterDuff.Mode.MULTIPLY)
+            hoursSwitch.trackDrawable.setColorFilter(colour, PorterDuff.Mode.MULTIPLY)
+        }
+    }
+
+    fun reloadGraph()
+    {
+        finish()
+        startActivity(intent)
+        overridePendingTransition(0,0)
+    }
+
+    fun writeSelectedGraphs(selectedGraphs: HashMap<String, Boolean>)
+    {
+        var selectedSummary = ""
+        for (graph in arrayOf("spoons", "hours", "health", "fatigue")) {
+            selectedSummary += if (selectedGraphs[graph] == true) "1" else "0"
+        }
+        prefs.writeSetting("SELECTEDGRAPHS", selectedSummary)
     }
 
     fun getArrayOfSelectedGraphs(selectedGraphs: HashMap<String, Boolean>) : Array<String>
@@ -86,11 +158,6 @@ class Graphs: AppCompatActivity() {
     {
         val graph: GraphView = findViewById(R.id.graph)
         graph.removeAllSeries()
-        graph.viewport.setMinY(0.0)
-        graph.viewport.setMaxY(10.0)
-        graph.gridLabelRenderer.numVerticalLabels = 11
-        graph.viewport.isYAxisBoundsManual = true
-        graph.gridLabelRenderer.setHumanRounding(false)
         var minDate: Date? = null
         var maxDate: Date? = null
         for (attribute in attributes) {
@@ -101,6 +168,10 @@ class Graphs: AppCompatActivity() {
                 "spoons" -> {
                     thisCategory = "activity"
                     graphColor = Color.rgb(112, 200, 255)
+                }
+                "hours" -> {
+                    thisCategory = "sleep"
+                    graphColor = Color.rgb(183, 125, 255)
                 }
             }
             for (stringDate in prefs.dateList) {
@@ -133,10 +204,10 @@ class Graphs: AppCompatActivity() {
         }
         if ((minDate != null) && (maxDate != null))
         {
+            graph.gridLabelRenderer.labelFormatter = DateAsXAxisLabelFormatter(applicationContext)
             graph.viewport.setMinX(minDate.time.toDouble())
             graph.viewport.setMaxX(maxDate.time.toDouble())
             graph.viewport.isXAxisBoundsManual = true
-            graph.gridLabelRenderer.labelFormatter = DateAsXAxisLabelFormatter(applicationContext)
         }
     }
 }
