@@ -47,16 +47,20 @@ class Graphs: AppCompatActivity() {
             true
         }
 
+        //ensures all the dates on which data is stored is loaded
         prefs.readDates()
 
+        //initialises the graph view with the 1-10 y axis and stops the zero lines being bold
         val graph: GraphView = findViewById(R.id.graph)
         graph.viewport.setMinY(0.0)
         graph.viewport.setMaxY(10.0)
-        graph.gridLabelRenderer.isHighlightZeroLines = false
         graph.gridLabelRenderer.numVerticalLabels = 11
         graph.viewport.isYAxisBoundsManual = true
+        graph.gridLabelRenderer.isHighlightZeroLines = false
         graph.gridLabelRenderer.setHumanRounding(false)
 
+        //initialises the dictionary selectedGraphs which contains each graph title and true/false
+        //the user's previous selection of graphs is loaded if applicable and the switches are toggled accordingly
         var selectedGraphs = HashMap<String, Boolean>()
         var previousSelected = prefs.readSetting("SELECTEDGRAPHS")
         if (previousSelected == "ERROR: DATA NOT FOUND") { previousSelected = "0000" }
@@ -69,65 +73,74 @@ class Graphs: AppCompatActivity() {
         healthSwitch.isChecked = selectedGraphs["health"]!!
         fatigueSwitch.isChecked = selectedGraphs["fatigue"]!!
 
+        //the switches are colour coded and the appropriate graphs drawn
         colourSwitches(selectedGraphs)
         drawGraphs(getArrayOfSelectedGraphs(selectedGraphs))
 
-        /*
-        spoonsSwitch.isChecked = true
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN) {
-            spoonsSwitch.thumbDrawable.setColorFilter(
-                Color.rgb(112, 200, 255),
-                PorterDuff.Mode.MULTIPLY
-            )
-        }
-        drawGraphs(getArrayOfSelectedGraphs(selectedGraphs))*/
-
+        //these listeners are called when their respective switches are clicked
+        //they update the selectedGraphs dictionary and call the update method
         spoonsSwitch.setOnCheckedChangeListener(CompoundButton.OnCheckedChangeListener { buttonView, isChecked ->
-            delay(3000)
             selectedGraphs["spoons"] = isChecked
-            writeSelectedGraphs(selectedGraphs)
-            colourSwitches(selectedGraphs)
-            drawGraphs(getArrayOfSelectedGraphs(selectedGraphs))
-            reloadGraph()
+            update(selectedGraphs)
         })
-
         hoursSwitch.setOnCheckedChangeListener(CompoundButton.OnCheckedChangeListener { buttonView, isChecked ->
-            delay(3000)
             selectedGraphs["hours"] = isChecked
-            writeSelectedGraphs(selectedGraphs)
-            colourSwitches(selectedGraphs)
-            drawGraphs(getArrayOfSelectedGraphs(selectedGraphs))
-            reloadGraph()
+            update(selectedGraphs)
+        })
+        healthSwitch.setOnCheckedChangeListener(CompoundButton.OnCheckedChangeListener { buttonView, isChecked ->
+            selectedGraphs["health"] = isChecked
+            update(selectedGraphs)
+        })
+        fatigueSwitch.setOnCheckedChangeListener(CompoundButton.OnCheckedChangeListener { buttonView, isChecked ->
+            selectedGraphs["fatigue"] = isChecked
+            update(selectedGraphs)
         })
     }
 
-    fun delay(millis: Long)
+    /*this method calls all the functions to
+       - update shared preferences with the switches that are currently selected
+       - colour code the switches
+       - draw all the selected graphs
+       - refresh the graph view
+     */
+    fun update(selectedGraphs: HashMap<String, Boolean>)
     {
-        /*
-        val start : CountDownTimer(3000, 1000) {
-            override fun onFinish() {
-                // When timer is finished 
-                // Execute your code here
-            }
-        }.start()*/
+        writeSelectedGraphs(selectedGraphs)
+        colourSwitches(selectedGraphs)
+        drawGraphs(getArrayOfSelectedGraphs(selectedGraphs))
+        reloadGraph()
     }
 
+    //this colour codes the switches so that when they are selected they are highlighted in the
+    //same colour as the graph drawn and, when they are not selected they are grey
     fun colourSwitches(selectedGraphs: HashMap<String, Boolean>)
     {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN) {
             var colour = Color.BLACK
 
             colour = if (selectedGraphs["spoons"]!!)
-            { Color.rgb(112, 200, 255) } else { Color.GRAY }
+            { Color.rgb(112, 200, 255) } else { Color.GRAY } //blue for spoons
             spoonsSwitch.thumbDrawable.setColorFilter(colour, PorterDuff.Mode.MULTIPLY)
 
             colour = if (selectedGraphs["hours"]!!)
-            { Color.rgb(183, 125, 255) } else { Color.GRAY }
+            { Color.rgb(183, 125, 255) } else { Color.GRAY } //purple for hours of sleep
             hoursSwitch.thumbDrawable.setColorFilter(colour, PorterDuff.Mode.MULTIPLY)
             hoursSwitch.trackDrawable.setColorFilter(colour, PorterDuff.Mode.MULTIPLY)
+
+            colour = if (selectedGraphs["health"]!!)
+            { Color.rgb(90, 176, 124) } else { Color.GRAY } //dark green for health
+            healthSwitch.thumbDrawable.setColorFilter(colour, PorterDuff.Mode.MULTIPLY)
+            healthSwitch.trackDrawable.setColorFilter(colour, PorterDuff.Mode.MULTIPLY)
+
+            colour = if (selectedGraphs["fatigue"]!!)
+            { Color.rgb(165, 240, 192) } else { Color.GRAY } //light green for fatigue
+            fatigueSwitch.thumbDrawable.setColorFilter(colour, PorterDuff.Mode.MULTIPLY)
+            fatigueSwitch.trackDrawable.setColorFilter(colour, PorterDuff.Mode.MULTIPLY)
         }
     }
 
+    //this actually reloads the whole activity, but it does so in order to update the graph view
+    // when another graph has been selected/deselected
     fun reloadGraph()
     {
         finish()
@@ -135,6 +148,7 @@ class Graphs: AppCompatActivity() {
         overridePendingTransition(0,0)
     }
 
+    //this updates shared preferences with the switches that are currently selected
     fun writeSelectedGraphs(selectedGraphs: HashMap<String, Boolean>)
     {
         var selectedSummary = ""
@@ -143,7 +157,8 @@ class Graphs: AppCompatActivity() {
         }
         prefs.writeSetting("SELECTEDGRAPHS", selectedSummary)
     }
-
+    
+    //this takes the dictionary of selectedGraphs and creates an array of just the graphs that are set to true
     fun getArrayOfSelectedGraphs(selectedGraphs: HashMap<String, Boolean>) : Array<String>
     {
         var selected = mutableListOf<String>()
@@ -154,12 +169,23 @@ class Graphs: AppCompatActivity() {
         return selected.toTypedArray()
     }
 
+    //this controls the graph view, cycling through the array of selected graphs and drawing them
     fun drawGraphs(attributes: Array<String>)
     {
         val graph: GraphView = findViewById(R.id.graph)
+        //the graph view is reset
         graph.removeAllSeries()
         var minDate: Date? = null
         var maxDate: Date? = null
+        /*Each graph is drawn in turn. 
+        Firstly the graph name is used to deduce the category and colour that the graph should be drawn.
+        The points of the graph are stored in myDataPoints.
+        The data points are found by cycling through all the dates where data is stored and checking
+        if there is relevant data to the current graph being drawn.   
+        The min and max date are updated when a date when a date with relevant data is found to be 
+        greater than or less than the current min and max date.
+        The data points are synthesised into a series and this is added to the graph view
+         */
         for (attribute in attributes) {
             var myDataPoints: MutableList<DataPoint> = mutableListOf()
             var thisCategory = ""
@@ -172,6 +198,14 @@ class Graphs: AppCompatActivity() {
                 "hours" -> {
                     thisCategory = "sleep"
                     graphColor = Color.rgb(183, 125, 255)
+                }
+                "health" -> {
+                    thisCategory = "symptoms"
+                    graphColor = Color.rgb(90, 176, 124)
+                }
+                "fatigue" -> {
+                    thisCategory = "symptoms"
+                    graphColor = Color.rgb(165, 240, 192)
                 }
             }
             for (stringDate in prefs.dateList) {
@@ -202,6 +236,7 @@ class Graphs: AppCompatActivity() {
                 graph.addSeries(series)
             }
         }
+        //this sets the minimum and maximum point of the x axis for the data found
         if ((minDate != null) && (maxDate != null))
         {
             graph.gridLabelRenderer.labelFormatter = DateAsXAxisLabelFormatter(applicationContext)
