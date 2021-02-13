@@ -50,11 +50,33 @@ class Graphs: AppCompatActivity() {
         //ensures all the dates on which data is stored is loaded
         prefs.readDates()
 
-        //initialises the graph view with the 1-10 y axis and stops the zero lines being bold
+        //initialises the graph view and sets the y axis scale and stops the zero lines being bold
         val graph: GraphView = findViewById(R.id.graph)
-        graph.viewport.setMinY(0.0)
-        graph.viewport.setMaxY(10.0)
-        graph.gridLabelRenderer.numVerticalLabels = 11
+        var potentialHighest = 12
+        var maxSpoonString = prefs.readSetting("MAXSPOONS")
+        //the number of spoons is the only available measure that could exceed 10, 
+        // hence it determines the scale of the y axis
+        if (maxSpoonString != "ERROR: DATA NOT FOUND") 
+        {
+            if (maxSpoonString.toInt() <= 10)
+            {
+                graph.viewport.setMinY(0.0)
+                graph.viewport.setMaxY(10.0)
+                graph.gridLabelRenderer.numVerticalLabels = 11
+            }
+            else if (maxSpoonString.toInt() <= 12)
+            {
+                graph.viewport.setMinY(0.0)
+                graph.viewport.setMaxY(12.0)
+                graph.gridLabelRenderer.numVerticalLabels = 13
+            }
+            else
+            {
+                graph.viewport.setMinY(0.0)
+                graph.viewport.setMaxY(15.0)
+                graph.gridLabelRenderer.numVerticalLabels = 16
+            }
+        }
         graph.viewport.isYAxisBoundsManual = true
         graph.gridLabelRenderer.isHighlightZeroLines = false
         graph.gridLabelRenderer.setHumanRounding(false)
@@ -157,7 +179,7 @@ class Graphs: AppCompatActivity() {
         }
         prefs.writeSetting("SELECTEDGRAPHS", selectedSummary)
     }
-    
+
     //this takes the dictionary of selectedGraphs and creates an array of just the graphs that are set to true
     fun getArrayOfSelectedGraphs(selectedGraphs: HashMap<String, Boolean>) : Array<String>
     {
@@ -177,12 +199,12 @@ class Graphs: AppCompatActivity() {
         graph.removeAllSeries()
         var minDate: Date? = null
         var maxDate: Date? = null
-        /*Each graph is drawn in turn. 
+        /*Each graph is drawn in turn.
         Firstly the graph name is used to deduce the category and colour that the graph should be drawn.
         The points of the graph are stored in myDataPoints.
         The data points are found by cycling through all the dates where data is stored and checking
-        if there is relevant data to the current graph being drawn.   
-        The min and max date are updated when a date when a date with relevant data is found to be 
+        if there is relevant data to the current graph being drawn.
+        The min and max date are updated when a date when a date with relevant data is found to be
         greater than or less than the current min and max date.
         The data points are synthesised into a series and this is added to the graph view
          */
