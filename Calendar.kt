@@ -61,15 +61,7 @@ class Calendar: AppCompatActivity() {
         //initialises the variable selectedDate as the date that is highlighted on the calendar and checks for data
         val sdf = SimpleDateFormat("yyyy-MM-dd")
         var selectedDate = sdf.format(calendarView.date).toString()
-        if (selectedDate in prefs.dateList)
-        {
-            var dateInfo = prefs.readAll(selectedDate)
-            dataTextView.text = formatData(dateInfo.toString())
-        }
-        else
-        {
-            dataTextView.text = ""
-        }
+        showData(selectedDate)
 
         //when the user highlights a different date, selected date is updated and the relevant data displayed
         calendarView.setOnDateChangeListener(object : CalendarView.OnDateChangeListener {
@@ -87,12 +79,8 @@ class Calendar: AppCompatActivity() {
                 //selected date is updated
                 selectedDate = "$thisyear2-$thismonth2-$thisday2"
                 //the data for the selected day is displayed in the scroll bar
-                if (selectedDate in prefs.dateList)
-                {
-                    var dateInfo = prefs.readAll(selectedDate)
-                    dataTextView.text = formatData(dateInfo.toString())
-                }
-                else { dataTextView.text = "" }
+                showData(selectedDate)
+
             }
         })
 
@@ -103,6 +91,17 @@ class Calendar: AppCompatActivity() {
             dateIntent.putExtra("selectedDate",selectedDate)
             startActivity(dateIntent)
         }
+    }
+
+    //displays the data for the selected day below the calendar
+    fun showData(selectedDate: String)
+    {
+        if (selectedDate in prefs.dateList)
+        {
+            var dateInfo = prefs.readAll(selectedDate)
+            dataTextView.text = formatData(dateInfo.toString())
+        }
+        else { dataTextView.text = "" }
     }
 
     //this function formats the shared preferences into the user-friendly calendar display
