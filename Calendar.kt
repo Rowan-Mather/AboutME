@@ -3,13 +3,17 @@ package com.example.aboutme
 import android.content.Intent
 import android.graphics.Color
 import android.os.Bundle
-import android.text.*
+import android.text.SpannableString
+import android.text.Spanned
 import android.text.style.ForegroundColorSpan
+import android.util.DisplayMetrics
 import android.widget.CalendarView
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.view.size
 import com.google.android.material.bottomnavigation.BottomNavigationView
 import kotlinx.android.synthetic.main.calendar.*
 import java.text.SimpleDateFormat
+
 
 class Calendar: AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -23,22 +27,36 @@ class Calendar: AppCompatActivity() {
 
         bottomNavigationView.setOnNavigationItemSelectedListener { item ->
             when (item.itemId) {
-                R.id.mainActivity -> {
-                    startActivity(Intent(this, MainActivity::class.java))
-                }
-                R.id.sleep -> {
-                    startActivity(Intent(this, Sleep::class.java))
-                }
-                R.id.symptoms -> {
-                    startActivity(Intent(this, Symptoms::class.java))
-                }
-                R.id.graphs -> {
-                    startActivity(Intent(this, Graphs::class.java))
-                }
+                R.id.mainActivity -> { startActivity(Intent(this, MainActivity::class.java)) }
+                R.id.sleep -> { startActivity(Intent(this, Sleep::class.java)) }
+                R.id.symptoms -> { startActivity(Intent(this, Symptoms::class.java)) }
+                R.id.graphs -> { startActivity(Intent(this, Graphs::class.java)) }
             }
             overridePendingTransition(0,0)
             true
         }
+
+        //sets the size and position of the calendar relative to the size of the screen & its orientation
+        val metrics = DisplayMetrics()
+        this.getWindowManager().getDefaultDisplay().getMetrics(metrics)
+        val screenWidth = metrics.widthPixels.toFloat()
+        val screenHeight = metrics.heightPixels.toFloat()
+        var scaleFactor: Float
+        val absoluteViewHeight: Float = (screenHeight - ((137 * getResources().getDisplayMetrics().density + 0.5f) + 0.22*screenHeight).toFloat())
+        if (screenWidth <= screenHeight)
+        {
+            scaleFactor = (screenWidth/520)
+            calendarView.x = (screenWidth/3.4).toFloat()
+            calendarView.y = (absoluteViewHeight/2.5).toFloat()
+        }
+        else
+        {
+            scaleFactor = (screenHeight/720)
+            calendarView.x = (screenWidth/2.65).toFloat()
+            calendarView.y = (absoluteViewHeight/2.8).toFloat()
+        }
+        calendarView.scaleX = scaleFactor
+        calendarView.scaleY = scaleFactor
 
         //initialises the variable selectedDate as the date that is highlighted on the calendar and checks for data
         val sdf = SimpleDateFormat("yyyy-MM-dd")
