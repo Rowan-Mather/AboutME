@@ -1,6 +1,5 @@
 package com.example.aboutme
 
-import android.content.Context
 import android.content.Intent
 import android.os.Build
 import android.os.Bundle
@@ -10,11 +9,11 @@ import androidx.appcompat.app.AppCompatActivity
 import com.google.android.material.bottomnavigation.BottomNavigationView
 import kotlinx.android.synthetic.main.activity_main.*
 
+@RequiresApi(Build.VERSION_CODES.O)
 class MainActivity : AppCompatActivity() {
     //initialises the variable spoons and the maximum number of spoons
     private var spoons = 12
     private var maxSpoons = 12
-    @RequiresApi(Build.VERSION_CODES.O)
     override fun onCreate(savedInstanceState: Bundle?) {
         //loads the dates on which information is stored
         prefs.readDates()
@@ -71,15 +70,13 @@ class MainActivity : AppCompatActivity() {
     }
 
     //reads the value of spoons from shared preferences
-    @RequiresApi(Build.VERSION_CODES.O)
-    fun readSpoons() : String
+    private fun readSpoons() : String
     {
         return prefs.readData(prefs.getCurrentDate(),"activity", "spoons")
     }
 
     //writes the value of spoons to shared preferences
-    @RequiresApi(Build.VERSION_CODES.O)
-    fun writeSpoons()
+    private fun writeSpoons()
     {
         prefs.writeData(prefs.getCurrentDate(),"activity", "spoons", spoons.toString())
     }
@@ -87,8 +84,7 @@ class MainActivity : AppCompatActivity() {
     //when one of the +/- buttons for the maximum spoons is clicked, this is called
     //it checks that the change would be in the maximum bounds
     //if so it updates the variable, and the number of spoons, and writes the info to shared prefs
-    @RequiresApi(Build.VERSION_CODES.O)
-    fun changeMax(change: Int)
+    private fun changeMax(change: Int)
     {
         if ((change < 0 && maxSpoons == 2) || (change > 0 && maxSpoons == 15 ))
         {
@@ -108,7 +104,7 @@ class MainActivity : AppCompatActivity() {
     }
 
     //sets the displayed spoon count, spoon maximum and recommendation message to their live values
-    fun updateTextViews()
+    private fun updateTextViews()
     {
         var message = ""
         when (spoons) {
