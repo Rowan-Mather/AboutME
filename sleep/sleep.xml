@@ -1,0 +1,149 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="#fffefc">
+
+    <com.google.android.material.bottomnavigation.BottomNavigationView
+        android:id="@+id/bottomNavigationSleep"
+        android:layout_width="398dp"
+        android:layout_height="80dp"
+        android:background="#f9f2ff"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:menu="@menu/bottom_menu" />
+
+    <TextView
+        android:id="@+id/SleepTitle"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="16dp"
+        android:layout_marginLeft="16dp"
+        android:layout_marginTop="16dp"
+        android:text="Sleep"
+        android:textColor="@color/sleep_title"
+        android:textSize="30dp"
+        android:textStyle="bold"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <TextView
+        android:id="@+id/hoursSleptView"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="16dp"
+        android:text="Hours slept last night: ?"
+        android:textSize="22dp"
+        app:layout_constraintBottom_toTopOf="@+id/bottomNavigationSleep"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.0"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/SleepTitle"
+        app:layout_constraintVertical_bias="0.042" />
+
+    <TextView
+        android:id="@+id/sleepQualityView"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="16dp"
+        android:layout_marginTop="36dp"
+        android:text="Quality of sleep:"
+        android:textSize="22dp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.0"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/sleepHoursMin" />
+
+    <SeekBar
+        android:id="@+id/sleepHoursBar"
+        style="@style/Widget.AppCompat.SeekBar.Discrete"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="16dp"
+        android:layout_marginTop="12dp"
+        android:layout_marginRight="16dp"
+        android:progressTint="@color/sleep_graph"
+        android:thumbTint="@color/sleep_title"
+        android:max="10"
+        android:progress="8"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/hoursSleptView" />
+
+    <TextView
+        android:id="@+id/sleepHoursMin"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="24dp"
+        android:layout_marginTop="8dp"
+        android:text="0"
+        android:textSize="20dp"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/sleepHoursBar" />
+
+    <TextView
+        android:id="@+id/SleepHoursMax"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="8dp"
+        android:layout_marginEnd="24dp"
+        android:layout_marginRight="24dp"
+        android:text="10+"
+        android:textSize="20dp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/sleepHoursBar" />
+
+    <RadioGroup
+        android:id="@+id/qualityGroup"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="16dp"
+        android:layout_marginTop="10dp"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/sleepQualityView">
+
+        <RadioButton
+            android:id="@+id/qualityFitful"
+            android:buttonTint="@color/sleep_graph"
+            android:layout_width="381dp"
+            android:layout_height="wrap_content"
+            android:text="Fitful"
+            android:textSize="20dp" />
+
+        <RadioButton
+            android:id="@+id/qualityPoor"
+            android:buttonTint="@color/sleep_graph"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Poor"
+            android:textSize="20dp" />
+
+        <RadioButton
+            android:id="@+id/qualityFair"
+            android:buttonTint="@color/sleep_graph"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Fair"
+            android:textSize="20dp" />
+
+        <RadioButton
+            android:id="@+id/qualityRestful"
+            android:buttonTint="@color/sleep_graph"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Restful"
+            android:textSize="20dp" />
+
+        <RadioButton
+            android:id="@+id/qualityEnergising"
+            android:buttonTint="@color/sleep_graph"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Energising"
+            android:textSize="20dp" />
+    </RadioGroup>
+
+</androidx.constraintlayout.widget.ConstraintLayout>
