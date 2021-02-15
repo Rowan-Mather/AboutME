@@ -32,41 +32,34 @@ class Symptoms : AppCompatActivity() {
         bottomNavigationView.selectedItemId = R.id.symptoms
         bottomNavigationView.setOnNavigationItemSelectedListener { item ->
             when (item.itemId) {
-                R.id.mainActivity -> {
-                    startActivity(Intent(this, MainActivity::class.java))
-                }
-                R.id.sleep -> {
-                    startActivity(Intent(this, Sleep::class.java))
-                }
-                R.id.calendar -> {
-                    startActivity(Intent(this, Calendar::class.java))
-                }
-                R.id.graphs -> {
-                    startActivity(Intent(this, Graphs::class.java))
-                }
+                R.id.mainActivity -> { startActivity(Intent(this, MainActivity::class.java)) }
+                R.id.sleep -> { startActivity(Intent(this, Sleep::class.java)) }
+                R.id.calendar -> { startActivity(Intent(this, Calendar::class.java)) }
+                R.id.graphs -> { startActivity(Intent(this, Graphs::class.java)) }
             }
             overridePendingTransition(0,0)
             true
         }
 
-        var currentDate = prefs.getCurrentDate()
+        val currentDate = prefs.getCurrentDate()
 
         //Controls the bar for overall health
         val healthBar: SeekBar = findViewById(R.id.healthBar)
         //the overallHealth variable is initialised and, if applicable, loaded from the app data
         var overallHealth = 5
-        var healthString = prefs.readData(currentDate,"symptoms","health")
+        val healthString = prefs.readData(currentDate,"symptoms","health")
         if (healthString != "ERROR: DATA NOT FOUND") {
             overallHealth = healthString.toInt()
             overallHealthView.text = "How is your health overall? ($healthString)"
             healthBar.progress = overallHealth
         }
         //if the user interacts with the seek bar, the displays are updated and data written accordingly
-        healthBar?.setOnSeekBarChangeListener(object : SeekBar.OnSeekBarChangeListener {
+        healthBar.setOnSeekBarChangeListener(object : SeekBar.OnSeekBarChangeListener {
             override fun onProgressChanged(seekBar: SeekBar, progress: Int, fromUser: Boolean) {
                 overallHealthView.text = "How is your health overall? ($progress)"
                 overallHealth = progress
             }
+
             override fun onStartTrackingTouch(seekBar: SeekBar) {}
             override fun onStopTrackingTouch(seekBar: SeekBar) {
                 prefs.writeData(currentDate,"symptoms", "health", overallHealth.toString())
@@ -77,18 +70,19 @@ class Symptoms : AppCompatActivity() {
         val fatigueBar: SeekBar = findViewById(R.id.fatigueBar)
         //the fatigue variable is initialised and, if applicable, loaded from the app data
         var fatigue = 5
-        var fatigueString = prefs.readData(currentDate,"symptoms","fatigue")
+        val fatigueString = prefs.readData(currentDate,"symptoms","fatigue")
         if (fatigueString != "ERROR: DATA NOT FOUND") {
             fatigue = fatigueString.toInt()
             fatigueView.text = "How tired/fatigued are you? ($fatigue)"
             fatigueBar.progress = fatigue
         }
         //if the user interacts with the seek bar, the displays are updated and data written accordingly
-        fatigueBar?.setOnSeekBarChangeListener(object : SeekBar.OnSeekBarChangeListener {
+        fatigueBar.setOnSeekBarChangeListener(object : SeekBar.OnSeekBarChangeListener {
             override fun onProgressChanged(seekBar: SeekBar, progress: Int, fromUser: Boolean) {
                 fatigueView.text = "How tired/fatigued are you? ($progress)"
                 fatigue = progress
             }
+
             override fun onStartTrackingTouch(seekBar: SeekBar) {}
             override fun onStopTrackingTouch(seekBar: SeekBar) {
                 prefs.writeData(currentDate,"symptoms", "fatigue", fatigue.toString())
