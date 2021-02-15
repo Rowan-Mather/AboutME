@@ -9,7 +9,6 @@ import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.core.content.ContextCompat
 import kotlinx.android.synthetic.main.calendardate.*
 
-
 class CalendarDate: AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         //loads the graphical layout
@@ -23,7 +22,7 @@ class CalendarDate: AppCompatActivity() {
 
         //creates a dictionary of the categories and arrays of the attributes in them
         //each button is stored as an instance of the data class EditButtonAttributes
-        //which creates the range of possible values that the user can select 
+        //which creates the range of possible values that the user can select
         val buttonAttributes = mapOf(
             "activity" to arrayOf(
                 EditButtonAttributes("spoons",0, 15)
@@ -62,7 +61,7 @@ class CalendarDate: AppCompatActivity() {
             title.setTextColor(colour)
             editLinear.addView(title)
             //a custom button layout is generated for each attribute of the category using edit_buttons.xml
-            //the button is customised by parsing in the appropriate EditButtonAttributes object, the 
+            //the button is customised by parsing in the appropriate EditButtonAttributes object, the
             //selected date, and the category
             //if a value has already been stored for spoons, for example, the button name and category
             //is used within the editButton object to load it from sharedPreferences
@@ -81,7 +80,7 @@ class CalendarDate: AppCompatActivity() {
 
     }
     //formats a date of the form yyyy-mm-dd into [day] [month] [year]
-    fun formatDate(date: String): String
+    private fun formatDate(date: String): String
     {
         val dateSplit = date.split("-")
         val year = dateSplit[0]
