@@ -13,7 +13,7 @@
         android:layout_marginLeft="16dp"
         android:layout_marginTop="16dp"
         android:text="Symptoms"
-        android:textColor="#01603F"
+        android:textColor="@color/symptoms_title"
         android:textSize="30dp"
         android:textStyle="bold"
         app:layout_constraintStart_toStartOf="parent"
@@ -36,6 +36,8 @@
     <SeekBar
         android:id="@+id/healthBar"
         style="@style/Widget.AppCompat.SeekBar.Discrete"
+        android:progressTint="@color/symptoms_graph"
+        android:thumbTint="@color/symptoms_title"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginLeft="16dp"
@@ -87,6 +89,8 @@
     <SeekBar
         android:id="@+id/fatigueBar"
         style="@style/Widget.AppCompat.SeekBar.Discrete"
+        android:progressTint="@color/symptoms_graph"
+        android:thumbTint="@color/symptoms_title"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginLeft="16dp"
@@ -139,11 +143,10 @@
         android:id="@+id/symptomsScrollView"
         android:layout_width="0dp"
         android:layout_height="0dp"
-        android:background="#0C4EC51B"
-        android:layout_marginTop="26dp"
+        android:layout_marginTop="15dp"
         android:layout_marginBottom="26dp"
-        android:layout_marginRight="26dp"
-        android:layout_marginLeft="26dp"
+        android:background="#0C4EC51B"
+        android:fadeScrollbars="false"
         app:layout_constraintBottom_toTopOf="@+id/addSymptomsView"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
@@ -151,12 +154,12 @@
 
         <LinearLayout
             android:id="@+id/symptomsScrollViewLinearLayout"
-            android:layout_marginTop="10dp"
-            android:layout_marginBottom="20dp"
-            android:layout_marginRight="10dp"
-            android:layout_marginLeft="10dp"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:layout_marginLeft="36dp"
+            android:layout_marginTop="15dp"
+            android:layout_marginRight="36dp"
+            android:layout_marginBottom="20dp"
             android:orientation="vertical" />
     </ScrollView>
 
@@ -164,36 +167,54 @@
         android:id="@+id/addSymptomsView"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Add potential symptoms:"
+        android:text="Add/delete potential symptoms:"
         android:textSize="20dp"
         app:layout_constraintBottom_toTopOf="@+id/insertNewSymptom"
         app:layout_constraintStart_toStartOf="@+id/insertNewSymptom" />
 
     <EditText
         android:id="@+id/insertNewSymptom"
-        android:layout_width="293dp"
-        android:layout_height="49dp"
-        android:layout_marginBottom="28dp"
+        android:layout_width="0dp"
+        android:layout_height="45dp"
+        android:layout_marginLeft="30dp"
+        android:layout_marginRight="20dp"
+        android:layout_marginBottom="32dp"
         android:text=""
         app:layout_constraintBottom_toTopOf="@+id/bottomNavigationSymptoms"
-        app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintEnd_toStartOf="@+id/addSymptomButton"
         app:layout_constraintHorizontal_bias="0.5"
         app:layout_constraintStart_toStartOf="parent" />
 
     <com.google.android.material.floatingactionbutton.FloatingActionButton
-        android:id="@+id/addSymptomButton"
-        android:layout_width="36dp"
-        android:layout_height="36dp"
-        android:layout_marginStart="16dp"
-        android:layout_marginLeft="16dp"
+        android:id="@+id/deleteSymptomButton"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginEnd="35dp"
+        android:layout_marginRight="35dp"
+        android:backgroundTint="@color/symptoms_title"
+        app:backgroundTint="#0C4EC51B"
+        android:tint="#FFFFFF"
         android:clickable="true"
-        app:layout_constraintBottom_toBottomOf="@+id/insertNewSymptom"
+        app:fabCustomSize="35dp"
+        app:layout_constraintBottom_toBottomOf="@+id/addSymptomButton"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.5"
-        app:layout_constraintStart_toEndOf="@+id/insertNewSymptom"
+        app:layout_constraintTop_toTopOf="@+id/addSymptomButton"
+        app:srcCompat="@drawable/ic_baseline_remove_24" />
+
+    <com.google.android.material.floatingactionbutton.FloatingActionButton
+        android:id="@+id/addSymptomButton"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginRight="16dp"
+        android:backgroundTint="@color/symptoms_title"
+        android:clickable="true"
+        android:tint="#FFFFFF"
+        app:backgroundTint="#0C4EC51B"
+        app:fabCustomSize="35dp"
+        app:layout_constraintBottom_toBottomOf="@+id/insertNewSymptom"
+        app:layout_constraintEnd_toStartOf="@+id/deleteSymptomButton"
         app:layout_constraintTop_toTopOf="@+id/insertNewSymptom"
-        app:srcCompat="@android:drawable/ic_menu_add" />
+        app:srcCompat="@drawable/ic_baseline_add_24" />
 
     <com.google.android.material.bottomnavigation.BottomNavigationView
         android:id="@+id/bottomNavigationSymptoms"
@@ -204,8 +225,5 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:menu="@menu/bottom_menu" />
-
-
-
 
 </androidx.constraintlayout.widget.ConstraintLayout>
