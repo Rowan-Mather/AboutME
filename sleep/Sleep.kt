@@ -39,14 +39,14 @@ class Sleep : AppCompatActivity() {
         val sleepHoursBar: SeekBar = findViewById(R.id.sleepHoursBar)
         //the hoursSlept variable is initialised and, if applicable, loaded from the app data
         var hoursSlept = 8
-        var hoursString = prefs.readData(currentDate,"sleep","hours")
+        val hoursString = prefs.readData(currentDate,"sleep","hours")
         if (hoursString != "ERROR: DATA NOT FOUND") {
             hoursSlept = hoursString.toInt()
             hoursSleptView.text = "Hours slept last night: $hoursSlept"
             sleepHoursBar.progress = hoursSlept
         }
         //if the user interacts with the seek bar, the displays are updated and data written accordingly
-        sleepHoursBar?.setOnSeekBarChangeListener(object : SeekBar.OnSeekBarChangeListener {
+        sleepHoursBar.setOnSeekBarChangeListener(object : SeekBar.OnSeekBarChangeListener {
             override fun onProgressChanged(seekBar: SeekBar, progress: Int, fromUser: Boolean) {
                 hoursSleptView.text = "Hours slept last night: $progress"
                 hoursSlept = progress
@@ -61,7 +61,7 @@ class Sleep : AppCompatActivity() {
         val sleepQualityRadio :RadioGroup = findViewById(R.id.qualityGroup)
         var sleepQuality = ""
         //if applicable, the previously checked radio button is read from the app data and re-checked
-        var qualityString = prefs.readData(currentDate,"sleep","quality")
+        val qualityString = prefs.readData(currentDate,"sleep","quality")
         if (qualityString != "ERROR: DATA NOT FOUND") {
             sleepQuality = qualityString
             when (qualityString) {
