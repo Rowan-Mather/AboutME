@@ -3,29 +3,37 @@ package com.example.aboutme
 import android.content.Intent
 import android.os.Build
 import android.os.Bundle
-import android.provider.ContactsContract
-import android.widget.RadioButton
-import android.widget.RadioGroup
-import android.widget.SeekBar
+import android.util.TypedValue
+import android.view.ContextThemeWrapper
+import android.view.Gravity
+import android.view.View
+import android.widget.*
 import androidx.annotation.RequiresApi
 import androidx.appcompat.app.AppCompatActivity
 import com.google.android.material.bottomnavigation.BottomNavigationView
+import kotlinx.android.synthetic.main.activity_main.*
 import kotlinx.android.synthetic.main.sleep.*
+import kotlinx.android.synthetic.main.symptoms.*
 
-class Sleep : AppCompatActivity() {
+
+class Symptoms : AppCompatActivity() {
+    //this variable is a dictionary storing all the current symptom checkbox details
+    // where key=[symptom name], value=[true/false (checked/unchecked)]
+    private var checkBoxes = linkedMapOf<String, Boolean>()
+
     @RequiresApi(Build.VERSION_CODES.O)
     override fun onCreate(savedInstanceState: Bundle?) {
         //loads the graphical layout
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.sleep)
+        setContentView(R.layout.symptoms)
 
         //controls the clicks on the bottom navigation bar
-        val bottomNavigationView = findViewById<BottomNavigationView>(R.id.bottomNavigationSleep)
-        bottomNavigationView.selectedItemId = R.id.sleep
+        val bottomNavigationView = findViewById<BottomNavigationView>(R.id.bottomNavigationSymptoms)
+        bottomNavigationView.selectedItemId = R.id.symptoms
         bottomNavigationView.setOnNavigationItemSelectedListener { item ->
             when (item.itemId) {
                 R.id.mainActivity -> { startActivity(Intent(this, MainActivity::class.java)) }
-                R.id.symptoms -> { startActivity(Intent(this, Symptoms::class.java)) }
+                R.id.sleep -> { startActivity(Intent(this, Sleep::class.java)) }
                 R.id.calendar -> { startActivity(Intent(this, Calendar::class.java)) }
                 R.id.graphs -> { startActivity(Intent(this, Graphs::class.java)) }
             }
@@ -33,55 +41,185 @@ class Sleep : AppCompatActivity() {
             true
         }
 
-        var currentDate = prefs.getCurrentDate()
+        val currentDate = prefs.getCurrentDate()
 
-        //Controls the bar for the number of hours slept
-        val sleepHoursBar: SeekBar = findViewById(R.id.sleepHoursBar)
-        //the hoursSlept variable is initialised and, if applicable, loaded from the app data
-        var hoursSlept = 8
-        val hoursString = prefs.readData(currentDate,"sleep","hours")
-        if (hoursString != "ERROR: DATA NOT FOUND") {
-            hoursSlept = hoursString.toInt()
-            hoursSleptView.text = "Hours slept last night: $hoursSlept"
-            sleepHoursBar.progress = hoursSlept
+        //Controls the bar for overall health
+        val healthBar: SeekBar = findViewById(R.id.healthBar)
+        //the overallHealth variable is initialised and, if applicable, loaded from the app data
+        var overallHealth = 5
+        val healthString = prefs.readData(currentDate,"symptoms","health")
+        if (healthString != "ERROR: DATA NOT FOUND") {
+            overallHealth = healthString.toInt()
+            overallHealthView.text = "How is your health overall? ($healthString)"
+            healthBar.progress = overallHealth
         }
         //if the user interacts with the seek bar, the displays are updated and data written accordingly
-        sleepHoursBar.setOnSeekBarChangeListener(object : SeekBar.OnSeekBarChangeListener {
+        healthBar.setOnSeekBarChangeListener(object : SeekBar.OnSeekBarChangeListener {
             override fun onProgressChanged(seekBar: SeekBar, progress: Int, fromUser: Boolean) {
-                hoursSleptView.text = "Hours slept last night: $progress"
-                hoursSlept = progress
+                overallHealthView.text = "How is your health overall? ($progress)"
+                overallHealth = progress
             }
             override fun onStartTrackingTouch(seekBar: SeekBar) {}
             override fun onStopTrackingTouch(seekBar: SeekBar) {
-                prefs.writeData(currentDate,"sleep", "hours", hoursSlept.toString())
+                prefs.writeData(currentDate,"symptoms", "health", overallHealth.toString())
             }
         })
 
-        //Sleep quality radio buttons
-        val sleepQualityRadio :RadioGroup = findViewById(R.id.qualityGroup)
-        var sleepQuality = ""
-        //if applicable, the previously checked radio button is read from the app data and re-checked
-        val qualityString = prefs.readData(currentDate,"sleep","quality")
-        if (qualityString != "ERROR: DATA NOT FOUND") {
-            sleepQuality = qualityString
-            when (qualityString) {
-                "Fitful" -> sleepQualityRadio.check(R.id.qualityFitful)
-                "Poor" -> sleepQualityRadio.check(R.id.qualityPoor)
-                "Fair" -> sleepQualityRadio.check(R.id.qualityFair)
-                "Restful" -> sleepQualityRadio.check(R.id.qualityRestful)
-                "Energising" -> sleepQualityRadio.check(R.id.qualityEnergising)
+        //Controls the bar for overall fatigue
+        val fatigueBar: SeekBar = findViewById(R.id.fatigueBar)
+        //the fatigue variable is initialised and, if applicable, loaded from the app data
+        var fatigue = 5
+        val fatigueString = prefs.readData(currentDate,"symptoms","fatigue")
+        if (fatigueString != "ERROR: DATA NOT FOUND") {
+            fatigue = fatigueString.toInt()
+            fatigueView.text = "How tired/fatigued are you? ($fatigue)"
+            fatigueBar.progress = fatigue
+        }
+        //if the user interacts with the seek bar, the displays are updated and data written accordingly
+        fatigueBar.setOnSeekBarChangeListener(object : SeekBar.OnSeekBarChangeListener {
+            override fun onProgressChanged(seekBar: SeekBar, progress: Int, fromUser: Boolean) {
+                fatigueView.text = "How tired/fatigued are you? ($progress)"
+                fatigue = progress
+            }
+            override fun onStartTrackingTouch(seekBar: SeekBar) {}
+            override fun onStopTrackingTouch(seekBar: SeekBar) {
+                prefs.writeData(currentDate,"symptoms", "fatigue", fatigue.toString())
+            }
+        })
+
+        //this block loads the checkbox list of symptoms
+        //finds the scroll view that contains the symptoms checkboxes
+        val symptomsLinearLayout: LinearLayout = findViewById(R.id.symptomsScrollViewLinearLayout)
+        //loads the checkboxes that have already been selected on the current date if applicable
+        val loadBoxesString = prefs.readData(currentDate, "symptoms", "symptoms")
+        var loadedBoxes: List<String> = listOf()
+        if ((loadBoxesString != "ERROR: DATA NOT FOUND") and (loadBoxesString != ""))
+        { loadedBoxes = loadBoxesString.split("+") }
+        /*loads the saved checkboxes, note the difference between the list of symptoms
+          that the user could select which do not get reset with each new day
+          and the the list of symptoms that the user has selected that day
+          this is the former, the above is the latter
+         */
+        val checkBoxNames = prefs.readCheckBoxes()
+        if (checkBoxNames == null)
+        { noSymptomsMessage() }
+        else
+        {
+            //each saved checkbox is displayed
+            for (i in checkBoxNames.indices)
+            {
+                val checkBox = CheckBox(ContextThemeWrapper(this, R.style.checkBox))
+                checkBox.setTextSize(TypedValue.COMPLEX_UNIT_DIP, 24F)
+                checkBox.text = checkBoxNames[i]
+                checkBoxes[checkBoxNames[i]] = false
+                //if they are supposed to be checked from earlier that day, they are checked
+                //by default they are added unchecked
+                if (loadedBoxes != null){
+                    if (checkBoxNames[i] in loadedBoxes)
+                    {
+                        checkBoxes[checkBoxNames[i]] = true
+                        checkBox.isChecked = true
+                    }
+                }
+                symptomsLinearLayout.addView(checkBox)
             }
         }
-        //when a radio button is clicked, the app data is updated
-        sleepQualityRadio.setOnCheckedChangeListener {group, checkedId ->
-            when (checkedId) {
-                R.id.qualityFitful -> sleepQuality = "Fitful"
-                R.id.qualityPoor -> sleepQuality = "Poor"
-                R.id.qualityFair -> sleepQuality = "Fair"
-                R.id.qualityRestful-> sleepQuality = "Restful"
-                R.id.qualityEnergising -> sleepQuality = "Energising"
+
+        //this button adds a new symptom checkbox
+        addSymptomButton.setOnClickListener {
+            //it takes the name from the user entry text box
+            //it checks the input is alphanumeric and not blank, and that that symptom hasn't already been added
+            val newName = insertNewSymptom.text.toString()
+            if ((newName.matches("^[a-zA-Z0-9]*$".toRegex())) && (newName != ""))
+            {
+                if (!checkBoxes.keys.contains(newName))
+                {
+                    //if there aren't currently any checkboxes, the message is removed
+                    if (checkBoxes.isEmpty())
+                    { symptomsLinearLayout.removeAllViews() }
+                    //a new view is created & formatted, assigned the new name
+                    val checkBox = CheckBox(ContextThemeWrapper(this, R.style.checkBox))
+                    checkBox.text = newName
+                    checkBox.setTextSize(TypedValue.COMPLEX_UNIT_DIP, 24F)
+                    checkBox.isChecked = true
+                    symptomsLinearLayout.addView(checkBox)
+                    checkBoxes[newName] = true
+                    //shared preferences are updated
+                    dataUpdateSelectedBoxes()
+                    prefs.writeCheckBoxes(checkBoxes.keys.toTypedArray())
+                    insertNewSymptom.setText("")
+                }
+                else
+                { Toast.makeText(applicationContext,"You have already added this symptom", Toast.LENGTH_SHORT).show() }
             }
-            prefs.writeData(currentDate,"sleep", "quality", sleepQuality)
+            else
+            { Toast.makeText(applicationContext,"Symptom name must be alphanumeric", Toast.LENGTH_SHORT).show() }
         }
+
+        //this button deletes a symptom checkbox
+        deleteSymptomButton.setOnClickListener {
+            //gets the name of the symptom from the input text box & checks that it is a valid name
+            val symptomName = insertNewSymptom.text.toString()
+            if ((symptomName.matches("^[a-zA-Z0-9]*$".toRegex())) && (symptomName != "") && (checkBoxes.keys.contains(symptomName)))
+            {
+                //removes the check box view & the element from the checkboxes dictionary
+                symptomsLinearLayout.removeViewAt(checkBoxes.keys.indexOf(symptomName))
+                checkBoxes.remove(symptomName)
+                //updates shared preferences
+                dataUpdateSelectedBoxes()
+                prefs.writeCheckBoxes(checkBoxes.keys.toTypedArray())
+                insertNewSymptom.setText("")
+                //if there are now no checkboxes, the message is displayed
+                if (checkBoxes.isEmpty())
+                { noSymptomsMessage() }
+            }
+            else
+            { Toast.makeText(applicationContext,"Cannot find that symptom", Toast.LENGTH_SHORT).show() }
+        }
+    }
+
+    //this function is called when any symptom checkbox is clicked
+    //it updates the checkbox dictionary and shared preferences
+    @RequiresApi(Build.VERSION_CODES.O)
+    fun onCheckboxClicked(view: View) {
+        val name = (view as CheckBox).text.toString()
+        checkBoxes[name] = view.isChecked
+        dataUpdateSelectedBoxes()
+    }
+    
+    //if there are no symptom checkboxes, a message is displayed
+    private fun noSymptomsMessage()
+    {
+        val symptomsLinearLayout: LinearLayout = findViewById(R.id.symptomsScrollViewLinearLayout)
+        val noSymptomsView = TextView(this)
+        noSymptomsView.gravity = Gravity.CENTER
+        noSymptomsView.text = "You have not added any potential symptoms to your list yet."
+        noSymptomsView.setTextSize(TypedValue.COMPLEX_UNIT_DIP, 20F)
+        symptomsLinearLayout.addView(noSymptomsView)
+    }
+
+    /*
+    this function is specifically for formatting checkbox data to be saved into shared preferences
+    it finds all the checkboxes that have been checked
+    then puts the names into one string with '+'s between them
+    and writes the data to shared preferences
+    */
+    @RequiresApi(Build.VERSION_CODES.O)
+    private fun dataUpdateSelectedBoxes()
+    {
+        var boxListString = ""
+        val names = checkBoxes.keys.toTypedArray()
+        val toggles = checkBoxes.values.toBooleanArray()
+        if (names.isNotEmpty()){
+            for (i in 0 until checkBoxes.size)
+            {
+                if (toggles[i]) { boxListString+=names[i]+"+" }
+            }
+            if (boxListString.isNotEmpty()){
+                if (boxListString[boxListString.lastIndex] == '+')
+                { boxListString = boxListString.substring(0,boxListString.lastIndex) }
+            }
+        }
+        prefs.writeData(prefs.getCurrentDate(), "symptoms", "symptoms", boxListString)
     }
 }
