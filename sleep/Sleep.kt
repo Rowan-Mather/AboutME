@@ -24,15 +24,10 @@ class Sleep : AppCompatActivity() {
         bottomNavigationView.selectedItemId = R.id.sleep
         bottomNavigationView.setOnNavigationItemSelectedListener { item ->
             when (item.itemId) {
-                R.id.mainActivity -> {
-                    startActivity(Intent(this, MainActivity::class.java))
-                }
-                R.id.symptoms -> {
-                    startActivity(Intent(this, Symptoms::class.java))
-                }
-                R.id.calendar -> {
-                    startActivity(Intent(this, Calendar::class.java))
-                }
+                R.id.mainActivity -> { startActivity(Intent(this, MainActivity::class.java)) }
+                R.id.symptoms -> { startActivity(Intent(this, Symptoms::class.java)) }
+                R.id.calendar -> { startActivity(Intent(this, Calendar::class.java)) }
+                R.id.graphs -> { startActivity(Intent(this, Graphs::class.java)) }
             }
             overridePendingTransition(0,0)
             true
