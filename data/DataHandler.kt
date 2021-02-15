@@ -139,8 +139,7 @@ class DataHandler (context: Context) {
         //the data is split into categories & the appropriate category is selected
         //the category data is split into attributes
         val dateInfo = sharedPrefs.getString(date, "")
-        if (dateInfo == "")
-        { return "ERROR: DATA NOT FOUND" }
+        if (dateInfo == "") { return "ERROR: DATA NOT FOUND" }
         val dateSplit = dateInfo!!.split(";").toTypedArray()
         val attributesString = dateSplit[categoryNum]
         val attributes = attributesString.split(",").toTypedArray()
@@ -155,21 +154,18 @@ class DataHandler (context: Context) {
         return "ERROR: DATA NOT FOUND"
     }
 
+    //this is specifically for writing the list of checkboxes that the user has added (i.e. symptoms)
     fun writeCheckBoxes(boxNames : Array<String>?)
     {
         var writeBoxNames = ""
         if ((boxNames != null) && (boxNames.isNotEmpty())) {
-            for (box in boxNames) {
-                writeBoxNames += "$box,"
-            }
-            if (writeBoxNames[writeBoxNames.lastIndex] == ',') {
-                writeBoxNames = writeBoxNames.substring(0, writeBoxNames.lastIndex)
-            }
+            writeBoxNames = boxNames.joinToString(",")
         }
         editor.putString("CHECKBOXES", writeBoxNames)
         editor.apply()
     }
 
+    //reads the list of checkboxes that the user has added and returns it as an array
     fun readCheckBoxes() : Array<String>?
     {
         val checkBoxData = sharedPrefs.getString("CHECKBOXES", "")
@@ -177,12 +173,14 @@ class DataHandler (context: Context) {
         return checkBoxData?.split(",")?.toTypedArray()
     }
 
+    //writes a non date specific piece of information e.g. the maximum number of spoons
     fun writeSetting(prefName: String, prefInfo: String)
     {
         editor.putString(prefName, prefInfo)
         editor.apply()
     }
 
+    //reads a non date specific piece of information
     fun readSetting(prefName: String) :String
     {
         return sharedPrefs.getString(prefName, "ERROR: DATA NOT FOUND")!!
@@ -192,10 +190,6 @@ class DataHandler (context: Context) {
     fun readAll(date : String): String? {
         val dateInfo = sharedPrefs.getString(date, "")
         return dateInfo
-    }
-
-    fun dumpdata(): MutableMap<String, *>? {
-        return sharedPrefs.all
     }
 
     //a function to return the actual current date
