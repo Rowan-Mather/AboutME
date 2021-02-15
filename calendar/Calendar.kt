@@ -2,20 +2,26 @@ package com.example.aboutme
 
 import android.content.Intent
 import android.graphics.Color
+import android.os.Build
 import android.os.Bundle
 import android.text.SpannableString
 import android.text.Spanned
 import android.text.style.ForegroundColorSpan
 import android.util.DisplayMetrics
 import android.widget.CalendarView
+import android.widget.Toast
+import androidx.annotation.RequiresApi
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.content.ContextCompat
 import androidx.core.view.size
 import com.google.android.material.bottomnavigation.BottomNavigationView
 import kotlinx.android.synthetic.main.calendar.*
 import java.text.SimpleDateFormat
+import java.util.*
 
 
 class Calendar: AppCompatActivity() {
+    @RequiresApi(Build.VERSION_CODES.O)
     override fun onCreate(savedInstanceState: Bundle?) {
         //loads the graphical layout
         super.onCreate(savedInstanceState)
@@ -80,21 +86,45 @@ class Calendar: AppCompatActivity() {
                 selectedDate = "$thisyear2-$thismonth2-$thisday2"
                 //the data for the selected day is displayed in the scroll bar
                 showData(selectedDate)
-
             }
         })
 
-        //if the edit button is clicked, the calendarDate activity is started
+        //the edit button is clicked
         editButton.setOnClickListener {
-            val dateIntent = Intent(this, CalendarDate::class.java)
-            //the selected date is passed into the new activity
-            dateIntent.putExtra("selectedDate",selectedDate)
-            startActivity(dateIntent)
+            //gets the selected date and the current date in unix time
+            var dateSplit = prefs.getCurrentDate().split("-")
+            val currentDate: Date = Date(
+                dateSplit[0].toInt() - 1900,
+                dateSplit[1].toInt() - 1,
+                dateSplit[2].toInt()
+            )
+            dateSplit = selectedDate.split("-")
+            val thisSelectedDate : Date = Date(
+                dateSplit[0].toInt() - 1900,
+                dateSplit[1].toInt() - 1,
+                dateSplit[2].toInt()
+            )
+            //if the selected date is equal to or after the current date, you can't edit the data
+            if (thisSelectedDate > currentDate)
+            {
+                Toast.makeText(applicationContext,"You cannot edit a future date", Toast.LENGTH_SHORT).show()
+            }
+            else if (thisSelectedDate == currentDate)
+            {
+                Toast.makeText(applicationContext,"You cannot edit today's data in the calendar", Toast.LENGTH_SHORT).show()
+            }
+            //otherwise the calendarDate activity is started
+            else {
+                val dateIntent = Intent(this, CalendarDate::class.java)
+                //the selected date is passed into the new activity
+                dateIntent.putExtra("selectedDate", selectedDate)
+                startActivity(dateIntent)
+            }
         }
     }
 
     //displays the data for the selected day below the calendar
-    fun showData(selectedDate: String)
+    private fun showData(selectedDate: String)
     {
         if (selectedDate in prefs.dateList)
         {
@@ -105,7 +135,7 @@ class Calendar: AppCompatActivity() {
     }
 
     //this function formats the shared preferences into the user-friendly calendar display
-    fun formatData(data: String): SpannableString
+    private fun formatData(data: String): SpannableString
     {
         /*
         the final product is a bullet pointed list of every attribute (labelled)
@@ -147,9 +177,9 @@ class Calendar: AppCompatActivity() {
         {
             var bulletColour = ForegroundColorSpan(Color.BLACK)
             when (newString[i]) {
-                '⓪' -> bulletColour = ForegroundColorSpan(Color.rgb(112, 200, 255)) //Activity
-                '①' -> bulletColour = ForegroundColorSpan(Color.rgb(183, 125, 255)) //Sleep
-                '②' -> bulletColour = ForegroundColorSpan(Color.rgb(165, 240, 192)) //Symptoms
+                '⓪' -> bulletColour = ForegroundColorSpan(ContextCompat.getColor(this, R.color.activity_graph))
+                '①' -> bulletColour = ForegroundColorSpan(ContextCompat.getColor(this, R.color.sleep_graph)) //Sleep
+                '②' -> bulletColour = ForegroundColorSpan(ContextCompat.getColor(this, R.color.symptoms_graph)) //Symptoms
             }
             newSpannableString.setSpan(bulletColour, i,i+1, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE)
         }
