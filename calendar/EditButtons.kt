@@ -100,7 +100,6 @@ class EditButtons : ConstraintLayout {
     private fun loadSelected()
     {
         val data = prefs.readData(date, category, title)
-        println("yoyo $date, $category, $title")
         if (data != "ERROR: DATA NOT FOUND")
         {
             selected = data
