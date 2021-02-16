@@ -109,9 +109,9 @@ class MainActivity : AppCompatActivity() {
         var message = ""
         when (spoons) {
             0 -> message = "You have no spoons remaining for today. You should rest."
-            1 -> message = "You're spoons are low, consider resting."
-            2 -> message = "You're spoons are low, consider resting."
-            maxSpoons -> message = "You're spoons are full!\nAfter you have been active, tap the spoon one or more times."
+            1 -> message = "Your spoons are low, consider resting."
+            2 -> message = "Your spoons are low, consider resting."
+            maxSpoons -> message = "Your spoons are full!\nAfter you have been active, tap the spoon one or more times."
         }
         spoonRecommendations.text = message
         spoonsDefaultView.text = "Maximum spoons: $maxSpoons"
