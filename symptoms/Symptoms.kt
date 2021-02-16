@@ -59,7 +59,6 @@ class Symptoms : AppCompatActivity() {
                 overallHealthView.text = "How is your health overall? ($progress)"
                 overallHealth = progress
             }
-
             override fun onStartTrackingTouch(seekBar: SeekBar) {}
             override fun onStopTrackingTouch(seekBar: SeekBar) {
                 prefs.writeData(currentDate,"symptoms", "health", overallHealth.toString())
@@ -82,41 +81,32 @@ class Symptoms : AppCompatActivity() {
                 fatigueView.text = "How tired/fatigued are you? ($progress)"
                 fatigue = progress
             }
-
             override fun onStartTrackingTouch(seekBar: SeekBar) {}
             override fun onStopTrackingTouch(seekBar: SeekBar) {
                 prefs.writeData(currentDate,"symptoms", "fatigue", fatigue.toString())
             }
         })
 
-        //this loads with the checkbox list of symptoms
+        //this block loads the checkbox list of symptoms
         //finds the scroll view that contains the symptoms checkboxes
         val symptomsLinearLayout: LinearLayout = findViewById(R.id.symptomsScrollViewLinearLayout)
         //loads the checkboxes that have already been selected on the current date if applicable
         val loadBoxesString = prefs.readData(currentDate, "symptoms", "symptoms")
         var loadedBoxes: List<String> = listOf()
         if ((loadBoxesString != "ERROR: DATA NOT FOUND") and (loadBoxesString != ""))
-        {
-            loadedBoxes = loadBoxesString.split("+")
-        }
-        //loads the saved checkboxes, nota bene the difference between the list of symptoms
-        // that the user could select which do not get reset with each new day
-        // and the the list of symptoms that the user has selected that day
-        // this is the former, the above is the latter
-        var checkBoxNames = prefs.readCheckBoxes()
+        { loadedBoxes = loadBoxesString.split("+") }
+        /*loads the saved checkboxes, note the difference between the list of symptoms
+          that the user could select which do not get reset with each new day
+          and the the list of symptoms that the user has selected that day
+          this is the former, the above is the latter
+         */
+        val checkBoxNames = prefs.readCheckBoxes()
         if (checkBoxNames == null)
-        {
-            //if there are no saved checkboxes, a message is displayed
-            val noSymptomsView = TextView(this)
-            noSymptomsView.gravity = Gravity.CENTER
-            noSymptomsView.text = "You have not added any potential symptoms to your list yet."
-            noSymptomsView.setTextSize(TypedValue.COMPLEX_UNIT_DIP, 24F)
-            symptomsLinearLayout?.addView(noSymptomsView)
-        }
+        { noSymptomsMessage() }
         else
         {
-            //otherwise each saved checkbox is displayed
-            for (i in 0 until checkBoxNames.size)
+            //each saved checkbox is displayed
+            for (i in checkBoxNames.indices)
             {
                 val checkBox = CheckBox(ContextThemeWrapper(this, R.style.checkBox))
                 checkBox.setTextSize(TypedValue.COMPLEX_UNIT_DIP, 24F)
@@ -131,7 +121,7 @@ class Symptoms : AppCompatActivity() {
                         checkBox.isChecked = true
                     }
                 }
-                symptomsLinearLayout?.addView(checkBox)
+                symptomsLinearLayout.addView(checkBox)
             }
         }
 
@@ -152,7 +142,7 @@ class Symptoms : AppCompatActivity() {
                     checkBox.text = newName
                     checkBox.setTextSize(TypedValue.COMPLEX_UNIT_DIP, 24F)
                     checkBox.isChecked = true
-                    symptomsLinearLayout?.addView(checkBox)
+                    symptomsLinearLayout.addView(checkBox)
                     checkBoxes[newName] = true
                     //shared preferences are updated
                     dataUpdateSelectedBoxes()
@@ -170,24 +160,20 @@ class Symptoms : AppCompatActivity() {
         deleteSymptomButton.setOnClickListener {
             //gets the name of the symptom from the input text box & checks that it is a valid name
             val symptomName = insertNewSymptom.text.toString()
-            if ((symptomName.matches("^[a-zA-Z0-9]*$".toRegex())) && (symptomName != "") && (checkBoxes.keys.contains(symptomName)))
+            if (symptomName.matches("^[a-zA-Z0-9 ]*$".toRegex()) && symptomName != "" && symptomName != " ")
             {
-                //removes the check box view & the element from the checkboxes dictionary
-                symptomsLinearLayout.removeViewAt(checkBoxes.keys.indexOf(symptomName))
-                checkBoxes.remove(symptomName)
-                //updates shared preferences
-                dataUpdateSelectedBoxes()
-                prefs.writeCheckBoxes(checkBoxes.keys.toTypedArray())
-                insertNewSymptom.setText("")
-                //if there are now no checkboxes, the message is displayed
-                if (checkBoxes.isEmpty())
-                {
-                    val noSymptomsView = TextView(this)
-                    noSymptomsView.gravity = Gravity.CENTER
-                    noSymptomsView.text = "You have not added any potential symptoms to your list yet."
-                    noSymptomsView.setTextSize(TypedValue.COMPLEX_UNIT_DIP, 20F)
-                    symptomsLinearLayout?.addView(noSymptomsView)
-                }
+                if (symptomName in checkBoxes.keys){
+                    //removes the check box view & the element from the checkboxes dictionary
+                    symptomsLinearLayout.removeViewAt(checkBoxes.keys.indexOf(symptomName))
+                    checkBoxes.remove(symptomName)
+                    //updates shared preferences
+                    dataUpdateSelectedBoxes()
+                    prefs.writeCheckBoxes(checkBoxes.keys.toTypedArray())
+                    insertNewSymptom.setText("")
+                    //if there are now no checkboxes, the message is displayed
+                    if (checkBoxes.isEmpty())
+                    { noSymptomsMessage() } 
+                } 
             }
             else
             { Toast.makeText(applicationContext,"Cannot find that symptom", Toast.LENGTH_SHORT).show() }
@@ -198,9 +184,20 @@ class Symptoms : AppCompatActivity() {
     //it updates the checkbox dictionary and shared preferences
     @RequiresApi(Build.VERSION_CODES.O)
     fun onCheckboxClicked(view: View) {
-        var name = (view as CheckBox).text.toString()
+        val name = (view as CheckBox).text.toString()
         checkBoxes[name] = view.isChecked
         dataUpdateSelectedBoxes()
+    }
+
+    //if there are no symptom checkboxes, a message is displayed
+    private fun noSymptomsMessage()
+    {
+        val symptomsLinearLayout: LinearLayout = findViewById(R.id.symptomsScrollViewLinearLayout)
+        val noSymptomsView = TextView(this)
+        noSymptomsView.gravity = Gravity.CENTER
+        noSymptomsView.text = "You have not added any potential symptoms to your list yet."
+        noSymptomsView.setTextSize(TypedValue.COMPLEX_UNIT_DIP, 20F)
+        symptomsLinearLayout.addView(noSymptomsView)
     }
 
     /*
@@ -210,11 +207,11 @@ class Symptoms : AppCompatActivity() {
     and writes the data to shared preferences
     */
     @RequiresApi(Build.VERSION_CODES.O)
-    fun dataUpdateSelectedBoxes()
+    private fun dataUpdateSelectedBoxes()
     {
         var boxListString = ""
-        var names = checkBoxes.keys.toTypedArray()
-        var toggles = checkBoxes.values.toBooleanArray()
+        val names = checkBoxes.keys.toTypedArray()
+        val toggles = checkBoxes.values.toBooleanArray()
         if (names.isNotEmpty()){
             for (i in 0 until checkBoxes.size)
             {
