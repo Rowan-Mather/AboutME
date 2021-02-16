@@ -60,11 +60,13 @@ class CalendarDate: AppCompatActivity() {
             title.layoutParams = params
             title.setTextColor(colour)
             editLinear.addView(title)
-            //a custom button layout is generated for each attribute of the category using edit_buttons.xml
-            //the button is customised by parsing in the appropriate EditButtonAttributes object, the
-            //selected date, and the category
-            //if a value has already been stored for spoons, for example, the button name and category
-            //is used within the editButton object to load it from sharedPreferences
+            /*a custom button layout is generated for each attribute of the category
+            these either use edit_buttons.xml or list_edit_button.xml
+            the button is customised by parsing in the appropriate EditButtonAttributes object, the
+            selected date, and the category
+            if a value has already been stored for spoons, for example, the button name and category
+            is used within the editButton object to load it from sharedPreferences
+             */
             for (button in buttonAttributes[category]!!)
             {
                 if (button.type == "list")
