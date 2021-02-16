@@ -33,8 +33,8 @@ class CalendarDate: AppCompatActivity() {
             ),
             "symptoms" to arrayOf(
                 EditButtonAttributes("health", 0, 10),
-                EditButtonAttributes("fatigue", 0, 10)
-                //EditButtonAttributes("symptoms", 0, 10)
+                EditButtonAttributes("fatigue", 0, 10),
+                EditButtonAttributes("symptoms")
             )
         )
 
@@ -67,9 +67,17 @@ class CalendarDate: AppCompatActivity() {
             //is used within the editButton object to load it from sharedPreferences
             for (button in buttonAttributes[category]!!)
             {
-                val editButton: EditButtons = EditButtons(this)
-                editButton.setUp(button, categoryColours[category]!!, thisDate, category)
-                editLinear.addView(editButton)
+                if (button.type == "list")
+                {
+                    val listEditButton: ListEditButton = ListEditButton(this)
+                    listEditButton.setUp(button.name, category, thisDate, categoryColours[category]!!, supportFragmentManager)
+                    editLinear.addView(listEditButton)
+                }
+                else{
+                    val editButton: EditButtons = EditButtons(this)
+                    editButton.setUp(button, categoryColours[category]!!, thisDate, category)
+                    editLinear.addView(editButton)
+                }
             }
         }
 
