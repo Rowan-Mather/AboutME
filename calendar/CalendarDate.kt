@@ -25,7 +25,7 @@ class CalendarDate: AppCompatActivity() {
         //which creates the range of possible values that the user can select
         val buttonAttributes = mapOf(
             "activity" to arrayOf(
-                EditButtonAttributes("spoons",0, 15)
+                EditButtonAttributes("spoons",-10, 15)
             ),
             "sleep" to arrayOf(
                 EditButtonAttributes("hours", 0, 10),
@@ -72,7 +72,7 @@ class CalendarDate: AppCompatActivity() {
                 if (button.type == "list")
                 {
                     val listEditButton: ListEditButton = ListEditButton(this)
-                    listEditButton.setUp(button.name, category, thisDate, categoryColours[category]!!, supportFragmentManager)
+                    listEditButton.setUp(button.name, category, thisDate, categoryColours[category]!!)
                     editLinear.addView(listEditButton)
                 }
                 else{
