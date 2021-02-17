@@ -8,6 +8,8 @@ import androidx.annotation.RequiresApi
 import androidx.appcompat.app.AppCompatActivity
 import com.google.android.material.bottomnavigation.BottomNavigationView
 import kotlinx.android.synthetic.main.activity_main.*
+import java.time.format.DateTimeFormatter
+import java.util.*
 
 @RequiresApi(Build.VERSION_CODES.O)
 class MainActivity : AppCompatActivity() {
@@ -40,19 +42,32 @@ class MainActivity : AppCompatActivity() {
         val maxSpoonString = prefs.readSetting("MAXSPOONS")
         if (maxSpoonString != "ERROR: DATA NOT FOUND") { maxSpoons = maxSpoonString.toInt() }
         val spoonsString = readSpoons()
-        spoons = if (spoonsString != "ERROR: DATA NOT FOUND") { spoonsString.toInt() }
-                else { maxSpoons }
+        if (spoonsString != "ERROR: DATA NOT FOUND")
+        {
+            spoons = spoonsString.toInt()
+        }
+        else
+        {
+            spoons = maxSpoons
+            //if the user exceeded their spoon allowance yesterday, the negative spoons are subtracted from this value
+            val yesterdaySpoons = prefs.readData(yesterday(),"activity", "spoons")
+            if (yesterdaySpoons != "ERROR: DATA NOT FOUND")
+            {
+                if (yesterdaySpoons.toInt() < 0)
+                { spoons += yesterdaySpoons.toInt() }
+            }
+        }
         updateTextViews()
 
         //when the user taps the spoon button, the spoon count is decremented and the stored data is updated
         spoonButton.setOnClickListener {
-            if (spoons > 0){
+            if (spoons > -10){
                 spoons -= 1
                 writeSpoons()
                 updateTextViews()
             }
             else
-            { Toast.makeText(applicationContext,"You have run out of spoons", Toast.LENGTH_SHORT).show() }
+            { Toast.makeText(applicationContext,"The spoon count cannot go any lower than this", Toast.LENGTH_SHORT).show() }
         }
 
         //controls the +/- buttons for changing the maximum number of spoons the user has
@@ -67,6 +82,25 @@ class MainActivity : AppCompatActivity() {
         helpButton.setOnClickListener {
             startActivity(Intent(this, ActivityHelp::class.java))
         }
+    }
+
+    //returns the date of the previous day in the form yyyy-mm-dd
+    private fun yesterday(): String
+    {
+        val dateSplit = prefs.getCurrentDate().split("-")
+        val currentDate: Long = Date(
+            dateSplit[0].toInt() - 1900,
+            dateSplit[1].toInt() - 1,
+            dateSplit[2].toInt()
+        ).time
+        val yesterdayTime = currentDate - 86400000
+        val yesterday: Date = Date(yesterdayTime)
+        var day = yesterday.date.toString()
+        if (yesterday.date < 10) { day = "0" + day}
+        var month = (yesterday.month + 1).toString()
+        if (yesterday.month + 1 < 10) { month = "0" + month}
+        val year = (yesterday.year +1900).toString()
+        return "$year-$month-$day"
     }
 
     //reads the value of spoons from shared preferences
@@ -94,7 +128,7 @@ class MainActivity : AppCompatActivity() {
         {
             maxSpoons += change
             prefs.writeSetting("MAXSPOONS", maxSpoons.toString())
-            if (!(spoons == 0 && change < 0))
+            if (!(spoons == -10 && change < 0))
             {
                 spoons += change
                 if (readSpoons() != "ERROR: DATA NOT FOUND") { writeSpoons() }
@@ -112,6 +146,10 @@ class MainActivity : AppCompatActivity() {
             1 -> message = "Your spoons are low, consider resting."
             2 -> message = "Your spoons are low, consider resting."
             maxSpoons -> message = "Your spoons are full!\nAfter you have been active, tap the spoon one or more times."
+        }
+        if (spoons < 0)
+        {
+            message = "You have exceeded your spoons for today.\nThe negative spoons will be taken off your starting amount tomorrow."
         }
         spoonRecommendations.text = message
         spoonsDefaultView.text = "Maximum spoons: $maxSpoons"
