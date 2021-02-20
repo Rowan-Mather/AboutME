@@ -6,6 +6,7 @@ import android.os.Build
 import androidx.annotation.RequiresApi
 import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
+import java.util.*
 
 class DataHandler (context: Context) {
     //initialises the file/location in which I store all the app data - sharedPrefs
@@ -31,7 +32,7 @@ class DataHandler (context: Context) {
     }
 
     //updates sharedPrefs with the dates in dateList
-    fun writeDates() {
+    private fun writeDates() {
         var stringDates = ""
         for (date in dateList) {
             stringDates += date + ","
@@ -39,6 +40,32 @@ class DataHandler (context: Context) {
         stringDates.dropLast(1)
         editor.putString("DATES", stringDates)
         editor.apply()
+    }
+
+    //this adds a new date to the dateList
+    private fun addDate(dateString: String)
+    {
+        //if the date is the most recent is is appended
+        val date = convertDate(dateString)
+        if ((dateList.isEmpty()) || (convertDate(dateList[dateList.lastIndex]) < date))
+        {
+            dateList.add(dateString)
+        }
+        //otherwise a simple binary search is performed to find the appropriate location for the new date
+        else
+        {
+            var l: Int = 0
+            var r: Int = dateList.lastIndex
+            while (l <= r){
+                val m: Int = ((l+r) / 2)
+                if (convertDate(dateList[m]) < date) { l = m+1 }
+                else if (convertDate(dateList[m]) > date) { r = m - 1 }
+                else
+                { return }
+            }
+            dateList.add(l, dateString)
+        }
+        writeDates()
     }
 
     //any data updates from the app are written to sharedPrefs through the below function
@@ -70,9 +97,9 @@ class DataHandler (context: Context) {
             }
             //the existing data is read and formatted into arrays
             val dateInfo = sharedPrefs.getString(date, "")
-            var dateSplit = dateInfo!!.split(";").toTypedArray()
+            val dateSplit = dateInfo!!.split(";").toTypedArray()
             var attributesString = dateSplit[categoryNum]
-            var attributes = attributesString.split(",").toMutableList()
+            val attributes = attributesString.split(",").toMutableList()
             //if the attribute being written already exists, its position in the data is found
             var dataLocation = -1
             var i = 0
@@ -112,8 +139,7 @@ class DataHandler (context: Context) {
                 //checks that the data being written has actually been defined
                 return
             }
-            dateList.add(date)
-            writeDates()
+            addDate(date)
             var toWrite = ""
             when (category) {
                 "activity" -> toWrite = "ACTIVITY,$infoName:$infoValue;SLEEP;SYMPTOMS"
@@ -154,6 +180,14 @@ class DataHandler (context: Context) {
         return "ERROR: DATA NOT FOUND"
     }
 
+    //removes the data from a given date
+    fun clearDate(date: String)
+    {
+        editor.remove(date)
+        dateList.remove(date)
+        writeDates()
+    }
+
     //this is specifically for writing the list of checkboxes that the user has added (i.e. symptoms)
     fun writeCheckBoxes(boxNames : Array<String>?)
     {
@@ -190,6 +224,16 @@ class DataHandler (context: Context) {
     fun readAll(date : String): String? {
         val dateInfo = sharedPrefs.getString(date, "")
         return dateInfo
+    }
+
+    fun convertDate(date: String) : Date
+    {
+        val dateSplit = date.split("-")
+        return Date(
+            dateSplit[0].toInt() - 1900,
+            dateSplit[1].toInt() - 1,
+            dateSplit[2].toInt()
+        )
     }
 
     //a function to return the actual current date
