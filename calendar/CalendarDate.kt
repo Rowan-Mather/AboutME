@@ -1,12 +1,16 @@
 package com.example.aboutme
 
 import android.R.attr.*
+import android.app.AlertDialog
+import android.content.DialogInterface
 import android.content.Intent
 import android.os.Bundle
 import android.widget.TextView
+import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.core.content.ContextCompat
+import kotlinx.android.synthetic.main.add_list_item_dialog.view.*
 import kotlinx.android.synthetic.main.calendardate.*
 
 class CalendarDate: AppCompatActivity() {
@@ -82,23 +86,43 @@ class CalendarDate: AppCompatActivity() {
                 }
             }
         }
+        editLinear.addView(TextView(this))
 
         //button to return the user to the calendar activity
         backButton.setOnClickListener {
             startActivity(Intent(this, Calendar::class.java))
         }
 
+        //button to delete all existing data for this date
+        clearDataButton.setOnClickListener {
+            //creates a dialog box to confirm deletion
+            val builder = AlertDialog.Builder(this)
+                .setTitle("Delete this date's data?")
+                .setNegativeButton("Cancel", DialogInterface.OnClickListener { _, _ -> })
+                .setPositiveButton("Delete",
+                    DialogInterface.OnClickListener { _, _ ->
+                        //deletes data & refreshes page
+                        if (thisDate in prefs.dateList)
+                        {
+                            prefs.clearDate(thisDate)
+                            finish()
+                            startActivity(intent)
+                            overridePendingTransition(0,0)
+                        }
+                    })
+            builder.show()
+        }
     }
+
     //formats a date of the form yyyy-mm-dd into [day] [month] [year]
     private fun formatDate(date: String): String
     {
-        val dateSplit = date.split("-")
-        val year = dateSplit[0]
-        var month = dateSplit[1]
-        val day = dateSplit[2].toInt()
         val months = arrayOf("January", "February", "March", "April", "May", "June", "July",
             "August", "September", "October", "November", "December")
-        month = months[month.toInt()-1]
+        val dateSplit = date.split("-")
+        val year = dateSplit[0]
+        val month = months[dateSplit[1].toInt()-1]
+        val day = dateSplit[2].toInt()
         return "$day $month $year"
     }
 }
