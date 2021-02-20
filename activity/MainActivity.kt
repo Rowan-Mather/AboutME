@@ -87,13 +87,8 @@ class MainActivity : AppCompatActivity() {
     //returns the date of the previous day in the form yyyy-mm-dd
     private fun yesterday(): String
     {
-        val dateSplit = prefs.getCurrentDate().split("-")
-        val currentDate: Long = Date(
-            dateSplit[0].toInt() - 1900,
-            dateSplit[1].toInt() - 1,
-            dateSplit[2].toInt()
-        ).time
-        val yesterdayTime = currentDate - 86400000
+        val currentDateTime: Long = prefs.convertDate(prefs.getCurrentDate()).time
+        val yesterdayTime = currentDateTime - 86400000
         val yesterday: Date = Date(yesterdayTime)
         var day = yesterday.date.toString()
         if (yesterday.date < 10) { day = "0" + day}
