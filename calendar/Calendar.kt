@@ -92,18 +92,9 @@ class Calendar: AppCompatActivity() {
         //the edit button is clicked
         editButton.setOnClickListener {
             //gets the selected date and the current date in unix time
-            var dateSplit = prefs.getCurrentDate().split("-")
-            val currentDate: Date = Date(
-                dateSplit[0].toInt() - 1900,
-                dateSplit[1].toInt() - 1,
-                dateSplit[2].toInt()
-            )
-            dateSplit = selectedDate.split("-")
-            val thisSelectedDate : Date = Date(
-                dateSplit[0].toInt() - 1900,
-                dateSplit[1].toInt() - 1,
-                dateSplit[2].toInt()
-            )
+            prefs.convertDate(prefs.getCurrentDate())
+            val currentDate: Date = prefs.convertDate(prefs.getCurrentDate())
+            val thisSelectedDate: Date = prefs.convertDate(selectedDate)
             //if the selected date is equal to or after the current date, you can't edit the data
             if (thisSelectedDate > currentDate)
             {
