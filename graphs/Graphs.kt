@@ -9,6 +9,7 @@ import android.os.CountDownTimer
 import android.os.Handler
 import android.widget.CompoundButton
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.content.ContextCompat
 import com.google.android.material.bottomnavigation.BottomNavigationView
 import com.jjoe64.graphview.GraphView
 import com.jjoe64.graphview.helper.DateAsXAxisLabelFormatter
@@ -30,18 +31,10 @@ class Graphs: AppCompatActivity() {
         bottomNavigationView.selectedItemId = R.id.graphs
         bottomNavigationView.setOnNavigationItemSelectedListener { item ->
             when (item.itemId) {
-                R.id.mainActivity -> {
-                    startActivity(Intent(this, MainActivity::class.java))
-                }
-                R.id.sleep -> {
-                    startActivity(Intent(this, Sleep::class.java))
-                }
-                R.id.symptoms -> {
-                    startActivity(Intent(this, Symptoms::class.java))
-                }
-                R.id.calendar -> {
-                    startActivity(Intent(this, Calendar::class.java))
-                }
+                R.id.mainActivity -> { startActivity(Intent(this, MainActivity::class.java)) }
+                R.id.sleep -> { startActivity(Intent(this, Sleep::class.java)) }
+                R.id.symptoms -> { startActivity(Intent(this, Symptoms::class.java)) }
+                R.id.calendar -> { startActivity(Intent(this, Calendar::class.java)) }
             }
             overridePendingTransition(0,0)
             true
@@ -50,33 +43,11 @@ class Graphs: AppCompatActivity() {
         //ensures all the dates on which data is stored is loaded
         prefs.readDates()
 
-        //initialises the graph view and sets the y axis scale and stops the zero lines being bold
+        //initialises the graph view
         val graph: GraphView = findViewById(R.id.graph)
-        var potentialHighest = 12
-        var maxSpoonString = prefs.readSetting("MAXSPOONS")
-        //the number of spoons is the only available measure that could exceed 10, 
-        // hence it determines the scale of the y axis
-        if (maxSpoonString != "ERROR: DATA NOT FOUND") 
-        {
-            if (maxSpoonString.toInt() <= 10)
-            {
-                graph.viewport.setMinY(0.0)
-                graph.viewport.setMaxY(10.0)
-                graph.gridLabelRenderer.numVerticalLabels = 11
-            }
-            else if (maxSpoonString.toInt() <= 12)
-            {
-                graph.viewport.setMinY(0.0)
-                graph.viewport.setMaxY(12.0)
-                graph.gridLabelRenderer.numVerticalLabels = 13
-            }
-            else
-            {
-                graph.viewport.setMinY(0.0)
-                graph.viewport.setMaxY(15.0)
-                graph.gridLabelRenderer.numVerticalLabels = 16
-            }
-        }
+        graph.viewport.setMinY(0.0)
+        graph.viewport.setMaxY(10.0)
+        graph.gridLabelRenderer.numVerticalLabels = 11
         graph.viewport.isYAxisBoundsManual = true
         graph.gridLabelRenderer.isHighlightZeroLines = false
         graph.gridLabelRenderer.setHumanRounding(false)
@@ -101,19 +72,19 @@ class Graphs: AppCompatActivity() {
 
         //these listeners are called when their respective switches are clicked
         //they update the selectedGraphs dictionary and call the update method
-        spoonsSwitch.setOnCheckedChangeListener(CompoundButton.OnCheckedChangeListener { buttonView, isChecked ->
+        spoonsSwitch.setOnCheckedChangeListener(CompoundButton.OnCheckedChangeListener { _, isChecked ->
             selectedGraphs["spoons"] = isChecked
             update(selectedGraphs)
         })
-        hoursSwitch.setOnCheckedChangeListener(CompoundButton.OnCheckedChangeListener { buttonView, isChecked ->
+        hoursSwitch.setOnCheckedChangeListener(CompoundButton.OnCheckedChangeListener { _, isChecked ->
             selectedGraphs["hours"] = isChecked
             update(selectedGraphs)
         })
-        healthSwitch.setOnCheckedChangeListener(CompoundButton.OnCheckedChangeListener { buttonView, isChecked ->
+        healthSwitch.setOnCheckedChangeListener(CompoundButton.OnCheckedChangeListener { _, isChecked ->
             selectedGraphs["health"] = isChecked
             update(selectedGraphs)
         })
-        fatigueSwitch.setOnCheckedChangeListener(CompoundButton.OnCheckedChangeListener { buttonView, isChecked ->
+        fatigueSwitch.setOnCheckedChangeListener(CompoundButton.OnCheckedChangeListener { _, isChecked ->
             selectedGraphs["fatigue"] = isChecked
             update(selectedGraphs)
         })
@@ -125,7 +96,7 @@ class Graphs: AppCompatActivity() {
        - draw all the selected graphs
        - refresh the graph view
      */
-    fun update(selectedGraphs: HashMap<String, Boolean>)
+    private fun update(selectedGraphs: HashMap<String, Boolean>)
     {
         writeSelectedGraphs(selectedGraphs)
         colourSwitches(selectedGraphs)
@@ -135,17 +106,17 @@ class Graphs: AppCompatActivity() {
 
     //this colour codes the switches so that when they are selected they are highlighted in the
     //same colour as the graph drawn and, when they are not selected they are grey
-    fun colourSwitches(selectedGraphs: HashMap<String, Boolean>)
+    private fun colourSwitches(selectedGraphs: HashMap<String, Boolean>)
     {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN) {
             var colour = Color.BLACK
 
             colour = if (selectedGraphs["spoons"]!!)
-            { Color.rgb(112, 200, 255) } else { Color.GRAY } //blue for spoons
+            { ContextCompat.getColor(this, R.color.activity_graph) } else { Color.GRAY } //blue for spoons
             spoonsSwitch.thumbDrawable.setColorFilter(colour, PorterDuff.Mode.MULTIPLY)
 
             colour = if (selectedGraphs["hours"]!!)
-            { Color.rgb(183, 125, 255) } else { Color.GRAY } //purple for hours of sleep
+            { ContextCompat.getColor(this, R.color.sleep_graph) } else { Color.GRAY } //purple for hours of sleep
             hoursSwitch.thumbDrawable.setColorFilter(colour, PorterDuff.Mode.MULTIPLY)
             hoursSwitch.trackDrawable.setColorFilter(colour, PorterDuff.Mode.MULTIPLY)
 
@@ -155,7 +126,7 @@ class Graphs: AppCompatActivity() {
             healthSwitch.trackDrawable.setColorFilter(colour, PorterDuff.Mode.MULTIPLY)
 
             colour = if (selectedGraphs["fatigue"]!!)
-            { Color.rgb(165, 240, 192) } else { Color.GRAY } //light green for fatigue
+            { ContextCompat.getColor(this, R.color.symptoms_graph)} else { Color.GRAY } //light green for fatigue
             fatigueSwitch.thumbDrawable.setColorFilter(colour, PorterDuff.Mode.MULTIPLY)
             fatigueSwitch.trackDrawable.setColorFilter(colour, PorterDuff.Mode.MULTIPLY)
         }
@@ -163,7 +134,7 @@ class Graphs: AppCompatActivity() {
 
     //this actually reloads the whole activity, but it does so in order to update the graph view
     // when another graph has been selected/deselected
-    fun reloadGraph()
+    private fun reloadGraph()
     {
         finish()
         startActivity(intent)
@@ -171,7 +142,7 @@ class Graphs: AppCompatActivity() {
     }
 
     //this updates shared preferences with the switches that are currently selected
-    fun writeSelectedGraphs(selectedGraphs: HashMap<String, Boolean>)
+    private fun writeSelectedGraphs(selectedGraphs: HashMap<String, Boolean>)
     {
         var selectedSummary = ""
         for (graph in arrayOf("spoons", "hours", "health", "fatigue")) {
@@ -181,7 +152,7 @@ class Graphs: AppCompatActivity() {
     }
 
     //this takes the dictionary of selectedGraphs and creates an array of just the graphs that are set to true
-    fun getArrayOfSelectedGraphs(selectedGraphs: HashMap<String, Boolean>) : Array<String>
+    private fun getArrayOfSelectedGraphs(selectedGraphs: HashMap<String, Boolean>) : Array<String>
     {
         var selected = mutableListOf<String>()
         for (graph in selectedGraphs.keys)
@@ -192,13 +163,14 @@ class Graphs: AppCompatActivity() {
     }
 
     //this controls the graph view, cycling through the array of selected graphs and drawing them
-    fun drawGraphs(attributes: Array<String>)
+    private fun drawGraphs(attributes: Array<String>)
     {
         val graph: GraphView = findViewById(R.id.graph)
         //the graph view is reset
         graph.removeAllSeries()
         var minDate: Date? = null
         var maxDate: Date? = null
+        var maxY: Double = 0.0
         /*Each graph is drawn in turn.
         Firstly the graph name is used to deduce the category and colour that the graph should be drawn.
         The points of the graph are stored in myDataPoints.
@@ -209,17 +181,17 @@ class Graphs: AppCompatActivity() {
         The data points are synthesised into a series and this is added to the graph view
          */
         for (attribute in attributes) {
-            var myDataPoints: MutableList<DataPoint> = mutableListOf()
+            val myDataPoints: MutableList<DataPoint> = mutableListOf()
             var thisCategory = ""
             var graphColor = Color.BLACK
             when (attribute) {
                 "spoons" -> {
                     thisCategory = "activity"
-                    graphColor = Color.rgb(112, 200, 255)
+                    graphColor = ContextCompat.getColor(this, R.color.activity_graph)
                 }
                 "hours" -> {
                     thisCategory = "sleep"
-                    graphColor = Color.rgb(183, 125, 255)
+                    graphColor = ContextCompat.getColor(this, R.color.sleep_graph)
                 }
                 "health" -> {
                     thisCategory = "symptoms"
@@ -227,25 +199,24 @@ class Graphs: AppCompatActivity() {
                 }
                 "fatigue" -> {
                     thisCategory = "symptoms"
-                    graphColor = Color.rgb(165, 240, 192)
+                    graphColor = ContextCompat.getColor(this, R.color.symptoms_graph)
                 }
             }
             for (stringDate in prefs.dateList) {
                 val attributeData = prefs.readData(stringDate, thisCategory, attribute)
                 if (attributeData != "ERROR: DATA NOT FOUND") {
-                    val dateSplit = stringDate.split("-")
-                    val date: Date = Date(
-                        dateSplit[0].toInt() - 1900,
-                        dateSplit[1].toInt() - 1,
-                        dateSplit[2].toInt()
-                    )
+                    val date: Date = prefs.convertDate(stringDate)
                     if ((maxDate == null) || (date > maxDate)) {
                         maxDate = date
                     }
                     if ((minDate == null) || (date < minDate)) {
                         minDate = date
                     }
-                    myDataPoints.add(DataPoint(date, attributeData.toInt().toDouble()))
+                    var y = attributeData.toInt().toDouble()
+                    //ignores negative y values
+                    if ( y < 0 ) { y = 0.0 }
+                    if (y > maxY) {maxY = y}
+                    myDataPoints.add(DataPoint(date, y))
                 }
             }
             if (myDataPoints.size != 0) {
@@ -258,13 +229,30 @@ class Graphs: AppCompatActivity() {
                 graph.addSeries(series)
             }
         }
-        //this sets the minimum and maximum point of the x axis for the data found
+        //this sets the minimum and maximum point of the x axis & max for Y for the data found
         if ((minDate != null) && (maxDate != null))
         {
             graph.gridLabelRenderer.labelFormatter = DateAsXAxisLabelFormatter(applicationContext)
-            graph.viewport.setMinX(minDate.time.toDouble())
+            val viewportLimit: Long = 5184000000 //x width in milliseconds
+            if (maxDate.time - minDate.time > viewportLimit)
+            {
+                //if the graph gets too big, you can scroll & scale
+                graph.viewport.setMinX((maxDate.time - viewportLimit).toDouble())
+                graph.viewport.isScrollable = true
+                graph.viewport.isScalable = true
+            }
+            else {
+                graph.viewport.setMinX(minDate.time.toDouble())
+                graph.viewport.isScrollable = false
+                graph.viewport.isScalable = false
+            }
             graph.viewport.setMaxX(maxDate.time.toDouble())
             graph.viewport.isXAxisBoundsManual = true
+        }
+        if (maxY > 10)
+        {
+            graph.viewport.setMaxY(maxY)
+            graph.gridLabelRenderer.numVerticalLabels = (maxY+1).toInt()
         }
     }
 }
