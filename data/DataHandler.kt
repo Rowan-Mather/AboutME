@@ -79,7 +79,7 @@ class DataHandler (context: Context) {
           - the value for the information (e.g. 1033, 4)
         info is stored by key-value pair of date and all that dates data (both strings)
            e.g. Key: 07/01/2020
-                value: ACTIVITY,spoons:3,steps:3021;SLEEP,hours:8,quality:good;SYMPTOMS,headache,fever
+                value: ACTIVITY,spoons:3,steps:3021;SLEEP,hours:8,quality:good;SYMPTOMS,fatigue:4
         (semicolon between categories which are specified in caps, comma between attributes, colon between attribute key-value pair)
         */
 
@@ -89,12 +89,9 @@ class DataHandler (context: Context) {
             //this runs if the date already has information stored on it
             //firstly, the category for the data is assigned an arbitrary integer
             //this corresponds to the order that the categories are stored in, namely: activity, sleep, symptoms
-            var categoryNum = -1
-            when (category) {
-                "activity" -> categoryNum = 0
-                "sleep" -> categoryNum = 1
-                "symptoms" -> categoryNum = 2
-            }
+            val categoryNum: Int
+            try { categoryNum = arrayOf("activity", "sleep", "symptoms").indexOf(category) } catch (e: Exception)
+            { return }
             //the existing data is read and formatted into arrays
             val dateInfo = sharedPrefs.getString(date, "")
             val dateSplit = dateInfo!!.split(";").toTypedArray()
@@ -156,18 +153,14 @@ class DataHandler (context: Context) {
     //any data displayed in the app is read from the below function
     fun readData(date : String, category: String, infoName : String): String {
         //as in the write function, the category for the data is assigned a corresponding integer
-        var categoryNum = -1
-        when (category) {
-            "activity" -> categoryNum = 0
-            "sleep" -> categoryNum = 1
-            "symptoms" -> categoryNum = 2
-        }
+        val categoryNum: Int
+        try { categoryNum = arrayOf("activity", "sleep", "symptoms").indexOf(category) } catch (e: Exception)
+        { return "ERROR: DATA NOT FOUND" }
         //the data is split into categories & the appropriate category is selected
         //the category data is split into attributes
         val dateInfo = sharedPrefs.getString(date, "")
         if (dateInfo == "") { return "ERROR: DATA NOT FOUND" }
-        val dateSplit = dateInfo!!.split(";").toTypedArray()
-        val attributesString = dateSplit[categoryNum]
+        val attributesString = dateInfo!!.split(";").toTypedArray()[categoryNum]
         val attributes = attributesString.split(",").toTypedArray()
         //the attributes are searched through for the desired one and if found, the corresponding value is returned as a string
         for (attribute in attributes) {
@@ -245,5 +238,4 @@ class DataHandler (context: Context) {
         val formatted = current.format(formatter)
         return formatted
     }
-
 }
