@@ -14,18 +14,14 @@ import android.view.View
 import android.view.View.OnClickListener
 import android.widget.*
 import androidx.constraintlayout.widget.ConstraintLayout
-import androidx.core.view.isNotEmpty
-import androidx.fragment.app.FragmentManager
 import com.google.android.material.floatingactionbutton.FloatingActionButton
 import kotlinx.android.synthetic.main.add_list_item_dialog.view.*
-import kotlinx.android.synthetic.main.calendardate.view.*
-import kotlinx.android.synthetic.main.edit_buttons.view.*
 import kotlinx.android.synthetic.main.list_edit_button.view.*
 
 
 //a compound view for the calendar date activity containing a text view and then a customisable list of items
 class ListEditButton : ConstraintLayout {
-    var listName = ""
+    private var listName = ""
     private var listCategory = ""
     private var thisDate = ""
     private var editList: MutableList<String> = mutableListOf()
@@ -177,7 +173,7 @@ class ListEditButton : ConstraintLayout {
         }
         writeList()
     }
-    
+
     //updates shared preferences with the current list
     private fun writeList()
     {
