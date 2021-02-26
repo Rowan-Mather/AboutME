@@ -15,13 +15,12 @@ import kotlinx.android.synthetic.main.activity_main.*
 import kotlinx.android.synthetic.main.sleep.*
 import kotlinx.android.synthetic.main.symptoms.*
 
-
+@RequiresApi(Build.VERSION_CODES.O)
 class Symptoms : AppCompatActivity() {
     //this variable is a dictionary storing all the current symptom checkbox details
     // where key=[symptom name], value=[true/false (checked/unchecked)]
     private var checkBoxes = linkedMapOf<String, Boolean>()
 
-    @RequiresApi(Build.VERSION_CODES.O)
     override fun onCreate(savedInstanceState: Bundle?) {
         //loads the graphical layout
         super.onCreate(savedInstanceState)
@@ -87,50 +86,40 @@ class Symptoms : AppCompatActivity() {
             }
         })
 
+        //this is specifically if the app is being used for the first time
+        //it sets 4 example/default symptoms that are commonly experienced by ME patients:
+        //sore throat, headache, joint pain, post-exertional malaise
+        if (prefs.readSetting("SYMPTOMDEFAULTS") == "ERROR: DATA NOT FOUND")
+        {
+            prefs.writeSetting("SYMPTOMDEFAULTS", "APPLIED")
+            checkBoxes["Sore Throat"] = false
+            checkBoxes["Headache"] = false
+            checkBoxes["Joint Pain"] = false
+            checkBoxes["Post-Exertional Malaise"] = false
+            prefs.writeCheckBoxes(checkBoxes.keys.toTypedArray())
+        }
+
         //this block loads the checkbox list of symptoms
         //finds the scroll view that contains the symptoms checkboxes
         val symptomsLinearLayout: LinearLayout = findViewById(R.id.symptomsScrollViewLinearLayout)
         //loads the checkboxes that have already been selected on the current date if applicable
         val loadBoxesString = prefs.readData(currentDate, "symptoms", "symptoms")
-        var loadedBoxes: List<String> = listOf()
+        var loadedBoxes: Array<String> = arrayOf()
         if ((loadBoxesString != "ERROR: DATA NOT FOUND") and (loadBoxesString != ""))
-        { loadedBoxes = loadBoxesString.split("+") }
+        { loadedBoxes = loadBoxesString.split("+").toTypedArray() }
         /*loads the saved checkboxes, note the difference between the list of symptoms
-          that the user could select which do not get reset with each new day
-          and the the list of symptoms that the user has selected that day
-          this is the former, the above is the latter
+          that the user could select which do not get reset with each new day (checkBoxNames)
+          and the the list of symptoms that the user has selected that day (loadedBoxes)
          */
         val checkBoxNames = prefs.readCheckBoxes()
-        if (checkBoxNames == null)
-        { noSymptomsMessage() }
-        else
-        {
-            //each saved checkbox is displayed
-            for (i in checkBoxNames.indices)
-            {
-                val checkBox = CheckBox(ContextThemeWrapper(this, R.style.checkBox))
-                checkBox.setTextSize(TypedValue.COMPLEX_UNIT_DIP, 24F)
-                checkBox.text = checkBoxNames[i]
-                checkBoxes[checkBoxNames[i]] = false
-                //if they are supposed to be checked from earlier that day, they are checked
-                //by default they are added unchecked
-                if (loadedBoxes != null){
-                    if (checkBoxNames[i] in loadedBoxes)
-                    {
-                        checkBoxes[checkBoxNames[i]] = true
-                        checkBox.isChecked = true
-                    }
-                }
-                symptomsLinearLayout.addView(checkBox)
-            }
-        }
+        displayCheckboxes(checkBoxNames, loadedBoxes)
 
         //this button adds a new symptom checkbox
         addSymptomButton.setOnClickListener {
             //it takes the name from the user entry text box
             //it checks the input is alphanumeric and not blank, and that that symptom hasn't already been added
             val newName = insertNewSymptom.text.toString()
-            if ((newName.matches("^[a-zA-Z0-9]*$".toRegex())) && (newName != ""))
+            if (newName.matches("^[a-zA-Z0-9 ]*$".toRegex()) && newName != "" && newName != " ")
             {
                 if (!checkBoxes.keys.contains(newName))
                 {
@@ -172,21 +161,88 @@ class Symptoms : AppCompatActivity() {
                     insertNewSymptom.setText("")
                     //if there are now no checkboxes, the message is displayed
                     if (checkBoxes.isEmpty())
-                    { noSymptomsMessage() } 
-                } 
+                    { noSymptomsMessage() }
+                }
             }
             else
             { Toast.makeText(applicationContext,"Cannot find that symptom", Toast.LENGTH_SHORT).show() }
+        }
+
+        //if the sort a-z button is clicked, the symptoms are sorted in alphabetical order
+        sortButton.setOnClickListener()
+        {
+            quickSortCheckBoxes()
+        }
+    }
+
+    //creates checkBox objects for every name in existingBoxes and checks them if they are
+    //listed in selectedBoxes
+    //adds each box to the linear layout
+    fun displayCheckboxes(existingBoxes: Array<String>?, selectedBoxes: Array<String>)
+    {
+        val symptomsLinearLayout: LinearLayout = findViewById(R.id.symptomsScrollViewLinearLayout)
+        symptomsLinearLayout.removeAllViews()
+        //if there are no checkboxes in the list, the message is displayed
+        if (existingBoxes == null)
+        { noSymptomsMessage() }
+        else
+        {
+            checkBoxes.clear()
+            //each saved checkbox is added to the view in turn
+            for (checkBoxName in existingBoxes)
+            {
+                val checkBox = CheckBox(ContextThemeWrapper(this, R.style.checkBox))
+                checkBox.setTextSize(TypedValue.COMPLEX_UNIT_DIP, 24F)
+                checkBox.text = checkBoxName
+                //if they are supposed to be checked from earlier that day, they are checked
+                //by default they are added unchecked
+                if (checkBoxName in selectedBoxes)
+                {
+                    checkBoxes[checkBoxName] = true
+                    checkBox.isChecked = true
+                }
+                else
+                {
+                    checkBoxes[checkBoxName] = false
+                    checkBox.isChecked = false
+                }
+                symptomsLinearLayout.addView(checkBox)
+            }
         }
     }
 
     //this function is called when any symptom checkbox is clicked
     //it updates the checkbox dictionary and shared preferences
-    @RequiresApi(Build.VERSION_CODES.O)
     fun onCheckboxClicked(view: View) {
         val name = (view as CheckBox).text.toString()
         checkBoxes[name] = view.isChecked
         dataUpdateSelectedBoxes()
+    }
+
+    //returns an array of the names of the checkboxes currently selected
+    private fun getSelectedBoxes(): Array<String>
+    {
+        val selectedBoxes = mutableListOf<String>()
+        for (checkBoxName in checkBoxes.keys)
+        {
+            if (checkBoxes[checkBoxName] == true)
+            {
+                selectedBoxes.add(checkBoxName)
+            }
+        }
+        return selectedBoxes.toTypedArray()
+    }
+
+    //formats checkbox data to be saved into shared preferences
+    //saves all currently selected boxes as a string separated by +s e.g. "cough+headache+sneeze"
+    private fun dataUpdateSelectedBoxes()
+    {
+        var boxListString = ""
+        val selectedBoxes = getSelectedBoxes()
+        if (selectedBoxes.isNotEmpty()) {
+            boxListString = selectedBoxes.joinToString("+")
+        }
+        prefs.writeData(prefs.getCurrentDate(), "symptoms", "symptoms", boxListString)
     }
 
     //if there are no symptom checkboxes, a message is displayed
@@ -200,28 +256,57 @@ class Symptoms : AppCompatActivity() {
         symptomsLinearLayout.addView(noSymptomsView)
     }
 
-    /*
-    this function is specifically for formatting checkbox data to be saved into shared preferences
-    it finds all the checkboxes that have been checked
-    then puts the names into one string with '+'s between them
-    and writes the data to shared preferences
-    */
-    @RequiresApi(Build.VERSION_CODES.O)
-    private fun dataUpdateSelectedBoxes()
+    //sorts the list of symptoms in alphabetical order using a quick sort
+    private fun quickSortCheckBoxes()
     {
-        var boxListString = ""
-        val names = checkBoxes.keys.toTypedArray()
-        val toggles = checkBoxes.values.toBooleanArray()
-        if (names.isNotEmpty()){
-            for (i in 0 until checkBoxes.size)
+        if (checkBoxes.size > 1) {
+            var checkBoxNames: Array<String> = checkBoxes.keys.toTypedArray()
+            quickSort(checkBoxNames, 0, checkBoxNames.lastIndex)
+
+            displayCheckboxes(checkBoxNames, getSelectedBoxes())
+            prefs.writeCheckBoxes(checkBoxes.keys.toTypedArray())
+        }
+    }
+
+    //quick sorts an array of strings
+    private fun quickSort(array: Array<String>, left: Int, right: Int) {
+        val part = partition(array, left, right)
+        if (left < part - 1)
+        {
+            //sort LHS
+            quickSort(array, left, part-1)
+        }
+        if (part < right)
+        {
+            //sort RHS
+            quickSort(array, part, right)
+        }
+    }
+
+    //reorder the string array so that all elements with values less than the pivot come before the pivot
+    private fun partition(array: Array<String>, left: Int, right: Int): Int
+    {
+        var l = left
+        var r = right
+        val pivot = array[(l+r)/2].toLowerCase() //pivot in middle of range
+        while (l <= r) {
+            while (array[l].toLowerCase().compareTo(pivot) <= 0)
             {
-                if (toggles[i]) { boxListString+=names[i]+"+" }
+                l += 1
             }
-            if (boxListString.isNotEmpty()){
-                if (boxListString[boxListString.lastIndex] == '+')
-                { boxListString = boxListString.substring(0,boxListString.lastIndex) }
+            while (array[r].toLowerCase().compareTo(pivot) >= 0)
+            {
+                r -= 1
+            }
+            if (l <= r)
+            {
+                val swap = array[l]
+                array[l] = array[r]
+                array[r] = swap
+                l += 1
+                r -= 1
             }
         }
-        prefs.writeData(prefs.getCurrentDate(), "symptoms", "symptoms", boxListString)
+        return l
     }
 }
