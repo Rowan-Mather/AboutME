@@ -141,17 +141,18 @@ class Calendar: AppCompatActivity() {
         */
         var newString = ""
         var bulletString = ""
-        var categories = data.split(";")
+        val categories = data.split(";")
 
         //for each of the categories, the attributes are placed on a new line and
         for (category in categories)
         {
-            var attributes = category.split(",")
-            var categoryMarker = ""
-            when (attributes[0]) {
-                "ACTIVITY" -> categoryMarker = "⓪ "
-                "SLEEP" -> categoryMarker = "① "
-                "SYMPTOMS" -> categoryMarker = "② "
+            val attributes = category.split(",")
+            var categoryMarker: String
+            categoryMarker = when (attributes[0]) {
+                "ACTIVITY" -> "⓪ "
+                "SLEEP" -> "① "
+                "SYMPTOMS" -> "② "
+                else -> ""
             }
             for (i in 1..attributes.lastIndex)
             {
