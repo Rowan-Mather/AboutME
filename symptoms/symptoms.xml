@@ -36,8 +36,6 @@
     <SeekBar
         android:id="@+id/healthBar"
         style="@style/Widget.AppCompat.SeekBar.Discrete"
-        android:progressTint="@color/symptoms_graph"
-        android:thumbTint="@color/symptoms_title"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginLeft="16dp"
@@ -45,6 +43,8 @@
         android:layout_marginRight="16dp"
         android:max="10"
         android:progress="5"
+        android:progressTint="@color/symptoms_graph"
+        android:thumbTint="@color/symptoms_title"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/overallHealthView" />
@@ -89,8 +89,6 @@
     <SeekBar
         android:id="@+id/fatigueBar"
         style="@style/Widget.AppCompat.SeekBar.Discrete"
-        android:progressTint="@color/symptoms_graph"
-        android:thumbTint="@color/symptoms_title"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginLeft="16dp"
@@ -98,6 +96,8 @@
         android:layout_marginRight="16dp"
         android:max="10"
         android:progress="5"
+        android:progressTint="@color/symptoms_graph"
+        android:thumbTint="@color/symptoms_title"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/fatigueView" />
@@ -192,9 +192,9 @@
         android:layout_marginEnd="35dp"
         android:layout_marginRight="35dp"
         android:backgroundTint="@color/symptoms_title"
-        app:backgroundTint="#0C4EC51B"
-        android:tint="#FFFFFF"
         android:clickable="true"
+        android:tint="#FFFFFF"
+        app:backgroundTint="#0C4EC51B"
         app:fabCustomSize="35dp"
         app:layout_constraintBottom_toBottomOf="@+id/addSymptomButton"
         app:layout_constraintEnd_toEndOf="parent"
@@ -215,6 +215,17 @@
         app:layout_constraintEnd_toStartOf="@+id/deleteSymptomButton"
         app:layout_constraintTop_toTopOf="@+id/insertNewSymptom"
         app:srcCompat="@drawable/ic_baseline_add_24" />
+
+    <Button
+        android:id="@+id/sortButton"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Sort a-z"
+        android:backgroundTint="@color/symptoms_title"
+        android:textColor="#FFFFFF"
+        android:layout_margin="10dp"
+        app:layout_constraintBottom_toBottomOf="@+id/symptomsScrollView"
+        app:layout_constraintEnd_toEndOf="parent" />
 
     <com.google.android.material.bottomnavigation.BottomNavigationView
         android:id="@+id/bottomNavigationSymptoms"
