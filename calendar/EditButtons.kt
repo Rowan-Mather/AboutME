@@ -132,13 +132,12 @@ class EditButtons : ConstraintLayout {
     {
         editAdd.backgroundTintList = ColorStateList.valueOf(colour)
         editDelete.backgroundTintList = ColorStateList.valueOf(colour)
-
     }
     //if the attribute has a numeric value, this is called to define the range
     private fun setRange(min: Int, max: Int)
     {
         val newRange = mutableListOf<String>()
-        for (i in min ..  max)
+        for (i in min .. max)
         {
             newRange.add(i.toString())
         }
