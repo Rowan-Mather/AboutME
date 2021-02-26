@@ -2,7 +2,7 @@ package com.example.aboutme
 
 /*this class stores attribute data e.g. spoons have range 0-15
 objects of this class are used to set up the compound views in the calendar date activity
-the compound view can be one of three types: 
+the compound view can be one of three types:
     - a min-max button set with integer values e.g. spoons
     - a min-max button set with string values e.g. quality of sleep
     - a list e.g. symptoms
