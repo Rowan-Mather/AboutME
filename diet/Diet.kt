@@ -21,6 +21,9 @@ import kotlinx.android.synthetic.main.food_item.view.*
 
 @RequiresApi(Build.VERSION_CODES.O)
 class Diet : AppCompatActivity() {
+    //the dictionary of foods that the user can add to their live list
+    //the key is the name of the food and the value is a tuple of the calories as an int
+    //and the tags as a string
     private var foodDictionary: MutableMap<String, Pair<Int, String>> = mutableMapOf()
     override fun onCreate(savedInstanceState: Bundle?) {
         //loads the graphical layout
@@ -43,11 +46,13 @@ class Diet : AppCompatActivity() {
 
         loadFoods()
 
+        //sets listener for the add to dictionary button
         addFoodButton.setOnClickListener()
         {
             addFoodWindow()
         }
 
+        //when the input in the search bar changes, the dictionary view is updated
         foodSearch.addTextChangedListener(object : TextWatcher {
             override fun afterTextChanged(s: Editable)
             {}
@@ -60,6 +65,7 @@ class Diet : AppCompatActivity() {
         })
     }
 
+    //loads the user's dictionary of foods from shared prefs
     private fun readDictionary()
     {
         val stringDictionary = prefs.readSetting("FOODDICTIONARY")
@@ -74,10 +80,12 @@ class Diet : AppCompatActivity() {
                 val tags = foodSplit[2]
                 foodDictionary[name] = Pair(calories, tags)
             }
+            //sorts dictionary
             foodDictionary = foodDictionary.toSortedMap().toMutableMap()
         }
     }
 
+    //updates shared prefs with the food dictionary
     private fun writeDictionary()
     {
         val writeList = mutableListOf<String>()
@@ -91,6 +99,7 @@ class Diet : AppCompatActivity() {
         prefs.writeSetting("FOODDICTIONARY", write)
     }
 
+    //sets up the dictionary and list of food views
     private fun loadFoods()
     {
         readDictionary()
@@ -99,8 +108,10 @@ class Diet : AppCompatActivity() {
         foodsList.hideAddButton()
     }
 
+    //when the + (add food to dictionary) button is clicked, this is called to handle the dialog box
     private fun addFoodWindow()
     {
+        //the dialog box is built
         val dialogView =
             LayoutInflater.from(this).inflate(R.layout.add_food_dialog, null)
         //a builder for the window is initialised with a title
@@ -109,10 +120,12 @@ class Diet : AppCompatActivity() {
             .setTitle("Add a new food")
             .setNegativeButton("Cancel", DialogInterface.OnClickListener { _, _ -> })
             .setPositiveButton("Add",
+                //when the add button is clicked, the entered values are retrieved
                 DialogInterface.OnClickListener { _, _ ->
                     val name = dialogView.foodNameInput.foodNameInputText.text.toString()
                     val calories = dialogView.foodCaloriesInput.foodCaloriesInputText.text.toString()
                     val tags = dialogView.foodTagsInput.foodTagsInputText.text.toString()
+                    //checks that the name entered is valid
                     if (name != "" && name != " " && name.matches("^[a-zA-Z0-9 ]*$".toRegex())) {
                         if (name in foodDictionary.keys)
                         {
@@ -120,6 +133,7 @@ class Diet : AppCompatActivity() {
                         }
                         else
                         {
+                            //checks that the calories entered is valid, if left empty, value defaults to -1
                             var caloriesInt = -1
                             try {
                                 caloriesInt = calories.toInt()
@@ -132,6 +146,7 @@ class Diet : AppCompatActivity() {
                                     return@OnClickListener
                                 }
                             }
+                            //edits the tags entered so they are saved in the form 'tag1!tag2!tag3'
                             var tagString = ""
                             if (tags != "")
                             {
@@ -156,6 +171,7 @@ class Diet : AppCompatActivity() {
                                     return@OnClickListener
                                 }
                             }
+                            //if there are no errors, the item is added to the live list and the dictionary
                             foodsList.addItem("$name#$caloriesInt#$tagString")
                             foodDictionary[name] = Pair(caloriesInt, tagString)
                             foodDictionary = foodDictionary.toSortedMap().toMutableMap()
@@ -171,6 +187,8 @@ class Diet : AppCompatActivity() {
         builder.show()
     }
 
+    //the dictionary is search for all keys beginning with the given value
+    //the array of matches is returned
     private fun searchFoods(search: String): Array<String>
     {
         val matches = mutableListOf<String>()
@@ -184,6 +202,9 @@ class Diet : AppCompatActivity() {
         return matches.toTypedArray()
     }
 
+    //this clears and recreates all the views in the dictionary
+    //if the user is searching, an array of matches is provided,
+    //otherwise it displays the whole dictionary
     private fun updateDictionaryView(foodsArray: Array<String>?)
     {
         foodScrollLinear.removeAllViews()
@@ -198,6 +219,7 @@ class Diet : AppCompatActivity() {
         {
             for (food in foods)
             {
+                //creates the compound view for one item
                 val foodView = FoodItem(this)
                 val calories = foodDictionary[food]!!.first
                 val tags = foodDictionary[food]!!.second
@@ -205,9 +227,14 @@ class Diet : AppCompatActivity() {
 
                 foodView.addFoodItem.setOnClickListener()
                 {
+                    //if the add button for an item in the dictionary is clicked,
+                    //the item is added to the live list
                     foodsList.addItem("$food#$calories#$tags")
                 }
                 foodView.deleteFoodButton.setOnClickListener() {
+                    //if the delete button for an item in the dictionary is clicked,
+                    //the item is removed from the dictionary and any instances of that item in the
+                    //live list are removed
                     foodDictionary.remove(food)
                     writeDictionary()
                     foodsList.deleteAllType("$food#$calories#$tags")
