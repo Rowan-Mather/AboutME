@@ -6,16 +6,6 @@
     android:layout_height="match_parent"
     android:background="#fffefc">
 
-    <com.google.android.material.bottomnavigation.BottomNavigationView
-        android:id="@+id/bottomNavigationSleep"
-        android:layout_width="398dp"
-        android:layout_height="80dp"
-        android:background="#f9f2ff"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:menu="@menu/bottom_menu" />
-
     <TextView
         android:id="@+id/SleepTitle"
         android:layout_width="wrap_content"
@@ -30,6 +20,15 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
+    <com.example.aboutme.TopNavigationButtons
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginRight="16dp"
+        app:layout_constraintBottom_toBottomOf="@+id/SleepTitle"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="@+id/SleepTitle"
+        android:layout_marginEnd="16dp" />
+
     <TextView
         android:id="@+id/hoursSleptView"
         android:layout_width="wrap_content"
@@ -43,19 +42,6 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/SleepTitle"
         app:layout_constraintVertical_bias="0.042" />
-
-    <TextView
-        android:id="@+id/sleepQualityView"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginLeft="16dp"
-        android:layout_marginTop="36dp"
-        android:text="Quality of sleep:"
-        android:textSize="22dp"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.0"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/sleepHoursMin" />
 
     <SeekBar
         android:id="@+id/sleepHoursBar"
@@ -95,6 +81,19 @@
         android:textSize="20dp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/sleepHoursBar" />
+
+    <TextView
+        android:id="@+id/sleepQualityView"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="16dp"
+        android:layout_marginTop="36dp"
+        android:text="Quality of sleep:"
+        android:textSize="22dp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.0"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/sleepHoursMin" />
 
     <RadioGroup
         android:id="@+id/qualityGroup"
@@ -145,5 +144,15 @@
             android:text="Energising"
             android:textSize="20dp" />
     </RadioGroup>
+
+    <com.google.android.material.bottomnavigation.BottomNavigationView
+        android:id="@+id/bottomNavigationSleep"
+        android:layout_width="398dp"
+        android:layout_height="80dp"
+        android:background="#f9f2ff"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:menu="@menu/bottom_menu" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>
