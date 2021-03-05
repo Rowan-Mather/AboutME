@@ -3,7 +3,6 @@ package com.example.aboutme
 import android.content.Intent
 import android.os.Build
 import android.os.Bundle
-import android.widget.RadioGroup
 import android.widget.SeekBar
 import androidx.annotation.RequiresApi
 import androidx.appcompat.app.AppCompatActivity
@@ -16,6 +15,7 @@ class Sleep : AppCompatActivity() {
         //loads the graphical layout
         super.onCreate(savedInstanceState)
         setContentView(R.layout.sleep)
+        prefs.writeSetting("PAGE", "sleep")
 
         //controls the clicks on the bottom navigation bar
         val bottomNavigationView = findViewById<BottomNavigationView>(R.id.bottomNavigationSleep)
@@ -24,8 +24,8 @@ class Sleep : AppCompatActivity() {
             when (item.itemId) {
                 R.id.mainActivity -> { startActivity(Intent(this, MainActivity::class.java)) }
                 R.id.symptoms -> { startActivity(Intent(this, Symptoms::class.java)) }
-                R.id.calendar -> { startActivity(Intent(this, Calendar::class.java)) }
-                R.id.graphs -> { startActivity(Intent(this, Graphs::class.java)) }
+                R.id.diet -> { startActivity(Intent(this, Diet::class.java)) }
+                R.id.medication -> { startActivity(Intent(this, Medication::class.java)) }
             }
             overridePendingTransition(0,0)
             true
@@ -49,29 +49,30 @@ class Sleep : AppCompatActivity() {
                 hoursSleptView.text = "Hours slept last night: $progress"
                 hoursSlept = progress
             }
-            override fun onStartTrackingTouch(seekBar: SeekBar) {}
+            override fun onStartTrackingTouch(seekBar: SeekBar)
+            { hoursSleptView.text = "Hours slept last night: $hoursSlept" }
             override fun onStopTrackingTouch(seekBar: SeekBar) {
+                hoursSleptView.text = "Hours slept last night: $hoursSlept"
                 prefs.writeData(currentDate,"sleep", "hours", hoursSlept.toString())
             }
         })
 
         //Sleep quality radio buttons
-        val sleepQualityRadio :RadioGroup = findViewById(R.id.qualityGroup)
         var sleepQuality = ""
         //if applicable, the previously checked radio button is read from the app data and re-checked
         val qualityString = prefs.readData(currentDate,"sleep","quality")
         if (qualityString != "ERROR: DATA NOT FOUND") {
             sleepQuality = qualityString
             when (qualityString) {
-                "Fitful" -> sleepQualityRadio.check(R.id.qualityFitful)
-                "Poor" -> sleepQualityRadio.check(R.id.qualityPoor)
-                "Fair" -> sleepQualityRadio.check(R.id.qualityFair)
-                "Restful" -> sleepQualityRadio.check(R.id.qualityRestful)
-                "Energising" -> sleepQualityRadio.check(R.id.qualityEnergising)
+                "Fitful" -> qualityGroup.check(R.id.qualityFitful)
+                "Poor" -> qualityGroup.check(R.id.qualityPoor)
+                "Fair" -> qualityGroup.check(R.id.qualityFair)
+                "Restful" -> qualityGroup.check(R.id.qualityRestful)
+                "Energising" -> qualityGroup.check(R.id.qualityEnergising)
             }
         }
         //when a radio button is clicked, the app data is updated
-        sleepQualityRadio.setOnCheckedChangeListener { _, checkedId ->
+        qualityGroup.setOnCheckedChangeListener { _, checkedId ->
             when (checkedId) {
                 R.id.qualityFitful -> sleepQuality = "Fitful"
                 R.id.qualityPoor -> sleepQuality = "Poor"
