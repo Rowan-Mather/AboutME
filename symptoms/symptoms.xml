@@ -19,6 +19,15 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
+    <com.example.aboutme.TopNavigationButtons
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginRight="16dp"
+        app:layout_constraintBottom_toBottomOf="@+id/symptomsTitle"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="@+id/symptomsTitle"
+        android:layout_marginEnd="16dp" />
+
     <TextView
         android:id="@+id/overallHealthView"
         android:layout_width="wrap_content"
@@ -153,7 +162,7 @@
         app:layout_constraintTop_toBottomOf="@+id/symptomsSelectView">
 
         <LinearLayout
-            android:id="@+id/symptomsScrollViewLinearLayout"
+            android:id="@+id/symptomsLinear"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginLeft="36dp"
@@ -162,6 +171,17 @@
             android:layout_marginBottom="20dp"
             android:orientation="vertical" />
     </ScrollView>
+
+    <Button
+        android:id="@+id/sortButton"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Sort a-z"
+        android:backgroundTint="@color/symptoms_title"
+        android:textColor="#FFFFFF"
+        android:layout_margin="10dp"
+        app:layout_constraintBottom_toBottomOf="@+id/symptomsScrollView"
+        app:layout_constraintEnd_toEndOf="parent" />
 
     <TextView
         android:id="@+id/addSymptomsView"
@@ -186,22 +206,6 @@
         app:layout_constraintStart_toStartOf="parent" />
 
     <com.google.android.material.floatingactionbutton.FloatingActionButton
-        android:id="@+id/deleteSymptomButton"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginEnd="35dp"
-        android:layout_marginRight="35dp"
-        android:backgroundTint="@color/symptoms_title"
-        android:clickable="true"
-        android:tint="#FFFFFF"
-        app:backgroundTint="#0C4EC51B"
-        app:fabCustomSize="35dp"
-        app:layout_constraintBottom_toBottomOf="@+id/addSymptomButton"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toTopOf="@+id/addSymptomButton"
-        app:srcCompat="@drawable/ic_baseline_remove_24" />
-
-    <com.google.android.material.floatingactionbutton.FloatingActionButton
         android:id="@+id/addSymptomButton"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
@@ -216,16 +220,21 @@
         app:layout_constraintTop_toTopOf="@+id/insertNewSymptom"
         app:srcCompat="@drawable/ic_baseline_add_24" />
 
-    <Button
-        android:id="@+id/sortButton"
+    <com.google.android.material.floatingactionbutton.FloatingActionButton
+        android:id="@+id/deleteSymptomButton"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Sort a-z"
+        android:layout_marginEnd="35dp"
+        android:layout_marginRight="35dp"
         android:backgroundTint="@color/symptoms_title"
-        android:textColor="#FFFFFF"
-        android:layout_margin="10dp"
-        app:layout_constraintBottom_toBottomOf="@+id/symptomsScrollView"
-        app:layout_constraintEnd_toEndOf="parent" />
+        android:clickable="true"
+        android:tint="#FFFFFF"
+        app:backgroundTint="#0C4EC51B"
+        app:fabCustomSize="35dp"
+        app:layout_constraintBottom_toBottomOf="@+id/addSymptomButton"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="@+id/addSymptomButton"
+        app:srcCompat="@drawable/ic_baseline_remove_24" />
 
     <com.google.android.material.bottomnavigation.BottomNavigationView
         android:id="@+id/bottomNavigationSymptoms"
