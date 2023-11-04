@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="colorPrimary">#6466AE</color>
+    <color name="colorPrimaryDark">#393B8A</color>
+    <color name="colorAccent">#59CFCF</color>
+
+    <color name="activity_title">#FF004382</color>
+    <color name="activity_buttons">#FFD2F7FB</color>
+    <color name="activity_graph">#70c8ff</color>
+
+    <color name="sleep_title">#380070</color>
+    <color name="sleep_graph">#b77dff</color>
+
+    <color name="symptoms_title">#01603F</color>
+    <color name="symptoms_graph">#9de3b6</color>
+
+    <color name="diet_title">#E89A00</color>
+    <color name="diet_secondary">#E9FFBA31</color>
+
+    <color name="medication_title">#FFC50000</color>
+    <color name="medication_secondary">#E1FF5B5B</color>
+
+</resources>

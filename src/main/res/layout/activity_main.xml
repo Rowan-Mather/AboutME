@@ -1,0 +1,151 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="#fffefc"
+    tools:context=".MainActivity">
+
+    <TextView
+        android:id="@+id/ActivityTitle"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="16dp"
+        android:layout_marginLeft="16dp"
+        android:layout_marginTop="16dp"
+        android:text="Activity"
+        android:textColor="@color/activity_title"
+        android:textSize="30dp"
+        android:textStyle="bold"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <com.google.android.material.floatingactionbutton.FloatingActionButton
+        android:id="@+id/helpButton"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:backgroundTint="@color/activity_title"
+        android:clickable="true"
+        android:layout_marginLeft="30dp"
+        android:tint="#FFFFFF"
+        app:fabCustomSize="20dp"
+        android:scaleY="2.2"
+        android:scaleX="2.2"
+        app:layout_constraintBottom_toBottomOf="@+id/ActivityTitle"
+        app:layout_constraintStart_toEndOf="@+id/ActivityTitle"
+        app:layout_constraintTop_toTopOf="@+id/ActivityTitle"
+        app:srcCompat="@drawable/ic_baseline_help_outline_24"
+        android:layout_marginStart="30dp" />
+
+    <com.example.aboutme.TopNavigationButtons
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginRight="16dp"
+        app:layout_constraintBottom_toBottomOf="@+id/ActivityTitle"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="@+id/ActivityTitle"
+        android:layout_marginEnd="16dp" />
+
+    <com.google.android.material.floatingactionbutton.FloatingActionButton
+        android:id="@+id/spoonButton"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:layout_marginLeft="50dp"
+        android:layout_marginTop="20dp"
+        android:layout_marginRight="50dp"
+        android:layout_marginBottom="20dp"
+        android:clickable="true"
+        android:foreground="@drawable/ic_spoon_outline7"
+        android:rotation="10"
+        app:backgroundTint="@color/activity_buttons"
+        app:layout_constraintBottom_toTopOf="@+id/spoonRecommendations"
+        app:layout_constraintDimensionRatio="1:1"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/ActivityTitle" />
+
+    <TextView
+        android:id="@+id/spoonCount"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:gravity="center_horizontal"
+        android:text="10"
+        android:textAlignment="center"
+        android:textColor="#FFFFFF"
+        android:textSize="35dp"
+        android:translationZ="15dp"
+        app:layout_constraintBottom_toBottomOf="@+id/spoonButton"
+        app:layout_constraintEnd_toEndOf="@+id/spoonButton"
+        app:layout_constraintHorizontal_bias="0.188"
+        app:layout_constraintStart_toStartOf="@+id/spoonButton"
+        app:layout_constraintTop_toTopOf="@+id/spoonButton"
+        app:layout_constraintVertical_bias="0.645" />
+
+    <TextView
+        android:id="@+id/spoonRecommendations"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:gravity="center_horizontal"
+        android:text="MESSAGE"
+        android:textAlignment="center"
+        android:textSize="26dp"
+        app:layout_constraintBottom_toTopOf="@+id/linearLayout"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/spoonButton" />
+
+    <LinearLayout
+        android:id="@+id/linearLayout"
+        android:layout_width="409dp"
+        android:layout_height="56dp"
+        android:gravity="center"
+        android:orientation="horizontal"
+        app:layout_constraintBottom_toTopOf="@+id/bottomNavigationActivity"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/spoonRecommendations">
+
+        <TextView
+            android:id="@+id/spoonsDefaultView"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginEnd="30dp"
+            android:layout_marginRight="30dp"
+            android:text="Maximum Spoons: 10"
+            android:textSize="22dp" />
+
+        <com.google.android.material.floatingactionbutton.FloatingActionButton
+            android:id="@+id/maxSpoonsPlus"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:backgroundTint="@color/activity_buttons"
+            android:clickable="true"
+            app:backgroundTint="#0C4EC51B"
+            app:fabCustomSize="32dp"
+            app:srcCompat="@drawable/ic_baseline_add_24" />
+
+        <com.google.android.material.floatingactionbutton.FloatingActionButton
+            android:id="@+id/maxSpoonsMinus"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="12dp"
+            android:layout_marginLeft="12dp"
+            android:backgroundTint="@color/activity_buttons"
+            android:clickable="true"
+            app:backgroundTint="#0C4EC51B"
+            app:fabCustomSize="32dp"
+            app:srcCompat="@drawable/ic_baseline_remove_24" />
+    </LinearLayout>
+
+    <com.google.android.material.bottomnavigation.BottomNavigationView
+        android:id="@+id/bottomNavigationActivity"
+        android:layout_width="398dp"
+        android:layout_height="80dp"
+        android:background="#f9f2ff"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:menu="@menu/bottom_menu" />
+
+</androidx.constraintlayout.widget.ConstraintLayout>

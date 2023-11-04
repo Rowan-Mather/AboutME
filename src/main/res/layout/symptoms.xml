@@ -1,0 +1,249 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <TextView
+        android:id="@+id/symptomsTitle"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="16dp"
+        android:layout_marginLeft="16dp"
+        android:layout_marginTop="16dp"
+        android:text="Symptoms"
+        android:textColor="@color/symptoms_title"
+        android:textSize="30dp"
+        android:textStyle="bold"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <com.example.aboutme.TopNavigationButtons
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginRight="16dp"
+        app:layout_constraintBottom_toBottomOf="@+id/symptomsTitle"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="@+id/symptomsTitle"
+        android:layout_marginEnd="16dp" />
+
+    <TextView
+        android:id="@+id/overallHealthView"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="16dp"
+        android:text="How is your health overall? (0-10)"
+        android:textSize="22dp"
+        app:layout_constraintBottom_toTopOf="@+id/bottomNavigationSymptoms"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.0"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/symptomsTitle"
+        app:layout_constraintVertical_bias="0.04" />
+
+    <SeekBar
+        android:id="@+id/healthBar"
+        style="@style/Widget.AppCompat.SeekBar.Discrete"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="16dp"
+        android:layout_marginTop="12dp"
+        android:layout_marginRight="16dp"
+        android:max="10"
+        android:progress="5"
+        android:progressTint="@color/symptoms_graph"
+        android:thumbTint="@color/symptoms_title"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/overallHealthView" />
+
+    <TextView
+        android:id="@+id/healthMin"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="24dp"
+        android:layout_marginTop="8dp"
+        android:text="Dreadful"
+        android:textSize="20dp"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/healthBar" />
+
+    <TextView
+        android:id="@+id/healthMax"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="8dp"
+        android:layout_marginEnd="24dp"
+        android:layout_marginRight="24dp"
+        android:text="Completely healthy"
+        android:textSize="20dp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/healthBar" />
+
+    <TextView
+        android:id="@+id/fatigueView"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="16dp"
+        android:text="How tired/fatigued are you? (0-10)"
+        android:textSize="22dp"
+        app:layout_constraintBottom_toTopOf="@+id/bottomNavigationSymptoms"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.0"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/healthMin"
+        app:layout_constraintVertical_bias="0.08" />
+
+    <SeekBar
+        android:id="@+id/fatigueBar"
+        style="@style/Widget.AppCompat.SeekBar.Discrete"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="16dp"
+        android:layout_marginTop="12dp"
+        android:layout_marginRight="16dp"
+        android:max="10"
+        android:progress="5"
+        android:progressTint="@color/symptoms_graph"
+        android:thumbTint="@color/symptoms_title"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/fatigueView" />
+
+    <TextView
+        android:id="@+id/fatigueMin"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="24dp"
+        android:layout_marginTop="8dp"
+        android:text="Exhausted"
+        android:textSize="20dp"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/fatigueBar" />
+
+    <TextView
+        android:id="@+id/fatigueMax"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="8dp"
+        android:layout_marginEnd="24dp"
+        android:layout_marginRight="24dp"
+        android:text="Energised"
+        android:textSize="20dp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/fatigueBar" />
+
+    <TextView
+        android:id="@+id/symptomsSelectView"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="16dp"
+        android:text="Select your symptoms:"
+        android:textSize="22dp"
+        app:layout_constraintBottom_toTopOf="@+id/bottomNavigationSymptoms"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.0"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/fatigueMin"
+        app:layout_constraintVertical_bias="0.08" />
+
+    <ScrollView
+        android:id="@+id/symptomsScrollView"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:layout_marginTop="15dp"
+        android:layout_marginBottom="26dp"
+        android:background="#0C4EC51B"
+        android:fadeScrollbars="false"
+        app:layout_constraintBottom_toTopOf="@+id/addSymptomsView"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/symptomsSelectView">
+
+        <LinearLayout
+            android:id="@+id/symptomsLinear"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="36dp"
+            android:layout_marginTop="15dp"
+            android:layout_marginRight="36dp"
+            android:layout_marginBottom="20dp"
+            android:orientation="vertical" />
+    </ScrollView>
+
+    <Button
+        android:id="@+id/sortButton"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Sort a-z"
+        android:backgroundTint="@color/symptoms_title"
+        android:textColor="#FFFFFF"
+        android:layout_margin="10dp"
+        app:layout_constraintBottom_toBottomOf="@+id/symptomsScrollView"
+        app:layout_constraintEnd_toEndOf="parent" />
+
+    <TextView
+        android:id="@+id/addSymptomsView"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Add/delete potential symptoms:"
+        android:textSize="20dp"
+        app:layout_constraintBottom_toTopOf="@+id/insertNewSymptom"
+        app:layout_constraintStart_toStartOf="@+id/insertNewSymptom" />
+
+    <EditText
+        android:id="@+id/insertNewSymptom"
+        android:layout_width="0dp"
+        android:layout_height="45dp"
+        android:layout_marginLeft="30dp"
+        android:layout_marginRight="20dp"
+        android:layout_marginBottom="32dp"
+        android:text=""
+        app:layout_constraintBottom_toTopOf="@+id/bottomNavigationSymptoms"
+        app:layout_constraintEnd_toStartOf="@+id/addSymptomButton"
+        app:layout_constraintHorizontal_bias="0.5"
+        app:layout_constraintStart_toStartOf="parent" />
+
+    <com.google.android.material.floatingactionbutton.FloatingActionButton
+        android:id="@+id/addSymptomButton"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginRight="16dp"
+        android:backgroundTint="@color/symptoms_title"
+        android:clickable="true"
+        android:tint="#FFFFFF"
+        app:backgroundTint="#0C4EC51B"
+        app:fabCustomSize="35dp"
+        app:layout_constraintBottom_toBottomOf="@+id/insertNewSymptom"
+        app:layout_constraintEnd_toStartOf="@+id/deleteSymptomButton"
+        app:layout_constraintTop_toTopOf="@+id/insertNewSymptom"
+        app:srcCompat="@drawable/ic_baseline_add_24" />
+
+    <com.google.android.material.floatingactionbutton.FloatingActionButton
+        android:id="@+id/deleteSymptomButton"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginEnd="35dp"
+        android:layout_marginRight="35dp"
+        android:backgroundTint="@color/symptoms_title"
+        android:clickable="true"
+        android:tint="#FFFFFF"
+        app:backgroundTint="#0C4EC51B"
+        app:fabCustomSize="35dp"
+        app:layout_constraintBottom_toBottomOf="@+id/addSymptomButton"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="@+id/addSymptomButton"
+        app:srcCompat="@drawable/ic_baseline_remove_24" />
+
+    <com.google.android.material.bottomnavigation.BottomNavigationView
+        android:id="@+id/bottomNavigationSymptoms"
+        android:layout_width="398dp"
+        android:layout_height="80dp"
+        android:background="#f9f2ff"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:menu="@menu/bottom_menu" />
+
+</androidx.constraintlayout.widget.ConstraintLayout>

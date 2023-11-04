@@ -1,0 +1,30 @@
+<resources xmlns:tools="http://schemas.android.com/tools">
+    <!-- Base application theme. -->
+    <style name="AppTheme" parent="Theme.AppCompat.Light.DarkActionBar">
+        <!-- Customize your theme here. -->
+        <item name="colorPrimary">@color/colorPrimary</item>
+        <item name="colorPrimaryDark">@color/colorPrimaryDark</item>
+        <item name="colorAccent">@color/colorAccent</item>
+    </style>
+
+    <style name="symptomCheckBox">
+        <item name="android:onClick">onCheckboxClicked</item>
+        <item name="colorAccent">@color/symptoms_title</item>
+        <item name="android:textColorSecondary">#292929</item>
+    </style>
+
+    <style name="medicationCheckBox">
+        <item name="android:onClick">onCheckboxClicked</item>
+        <item name="colorAccent">@color/medication_title</item>
+        <item name="android:textColorSecondary">#292929</item>
+    </style>
+
+    <style name="crossButton">
+        <item name="android:background">#FFFFFF</item>
+        <item name="android:scaleX">1.2</item>
+        <item name="android:scaleY">1.2</item>
+        <item name="tint">#FF8080</item>
+        <item name="android:src">@drawable/ic_baseline_close_24</item>
+    </style>
+
+</resources>

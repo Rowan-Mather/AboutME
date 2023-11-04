@@ -1,0 +1,45 @@
+<resources>
+    <string name="app_name">AboutME</string>
+    <string name="activity_help_body">
+        "Spoons are a proxy measurement for the amount of "
+        "energy that you expire throughout the day.\n\n"
+        "They are used by people with chronic illness to visually represent "
+        "and explain their experience.\n\n"
+        "For every task you perform, tap the spoon button one or more times. \n\n"
+        "If you slept badly, or are unwell with a non-chronic illness like a cold, "
+        "you may wish to tap the spoon a few extra times. "
+        "Typically, people with conditions "
+        "such as ME/CFS start every day with 12 spoons, but you can change your "
+        "maximum number of spoons "
+        "to be anywhere from 2-15.\n\n"
+        "As a rough guide, below are a few activities and how many spoons "
+        "they typically use.
+
+        1 Spoon:
+            - Getting out of bed
+            - Getting dressed
+            - Taking medication
+
+        2 Spoons:
+            - Showering
+            - Reading
+            - Surfing The Internet
+
+        3 Spoons:
+            - Driving
+            - Preparing a meal
+            - Light housework
+
+        4 Spoons:
+            - Going to the doctor
+            - Going to work
+            - Exercising\n\n"
+
+        "The Spoon Theory was invented by Christine Miserandino. "
+        "To find out more, go to "
+        "https://butyoudontlooksick.com/articles/written-"
+        "by-christine/the-spoon-theory/
+
+        "
+    </string>
+</resources>
